@@ -22,8 +22,7 @@ namespace Smackdown
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
-            //hi this is a test
+            Content.RootDirectory = "Content"
         }
 
         /// <summary>
