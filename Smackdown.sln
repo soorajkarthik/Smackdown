@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smackdown", "Smackdown\Smackdown\Smackdown.csproj", "{4D6795B9-06B1-4103-B87B-B530AA0E9183}"
+EndProject
+Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "SmackdownContent", "Smackdown\SmackdownContent\SmackdownContent.contentproj", "{FE3ADD06-5610-439E-BC0A-4DE87EE09007}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4D6795B9-06B1-4103-B87B-B530AA0E9183}.Debug|x86.ActiveCfg = Debug|x86
+		{4D6795B9-06B1-4103-B87B-B530AA0E9183}.Debug|x86.Build.0 = Debug|x86
+		{4D6795B9-06B1-4103-B87B-B530AA0E9183}.Release|x86.ActiveCfg = Release|x86
+		{4D6795B9-06B1-4103-B87B-B530AA0E9183}.Release|x86.Build.0 = Release|x86
+		{FE3ADD06-5610-439E-BC0A-4DE87EE09007}.Debug|x86.ActiveCfg = Debug|x86
+		{FE3ADD06-5610-439E-BC0A-4DE87EE09007}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
