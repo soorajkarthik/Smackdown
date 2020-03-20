@@ -16,8 +16,22 @@ namespace Smackdown
     /// </summary>
     public class Game1 : Microsoft.Xna.Framework.Game
     {
+        enum GameState
+        {
+            MainMenu,
+            LevelSelection,
+            PlayerLoadScreen,
+            Play,
+            PauseMenu,
+            GameOver,
+            Controls,
+            Settings
+        }
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+
+        GameState gameState;
 
         public Game1()
         {
