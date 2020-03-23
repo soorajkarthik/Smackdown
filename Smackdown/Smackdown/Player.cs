@@ -15,5 +15,34 @@ namespace Smackdown
     {
         Rectangle loc;
         Texture2D img;
+        int vx, vy;
+
+        public Player(): this(new Rectangle(), null, 0, 0)
+        {
+
+        }
+
+        public Player(Rectangle loc, Texture2D img, int vx, int vy)
+        {
+            this.loc = loc;
+            this.img = img;
+            this.vx = vx;
+            this.vy = vy;
+        }
+
+        public void Update(GamePadState gamePad)
+        {
+            loc.X += vx;
+            loc.Y += vy;
+
+            //vy -= GRAVITY;
+
+            //check level collision
+        }
+
+        public void Draw()
+        {
+
+        }
     }
 }
