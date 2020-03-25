@@ -17,17 +17,20 @@ namespace Smackdown
         Texture2D img;
         int vx, vy;
 
-        public Player(): this(new Rectangle(), null, 0, 0)
+        PlayerIndex playerIndex;
+
+        public Player(): this(new Rectangle(), null, 0, 0, PlayerIndex.One)
         {
 
         }
 
-        public Player(Rectangle loc, Texture2D img, int vx, int vy)
+        public Player(Rectangle loc, Texture2D img, int vx, int vy, PlayerIndex playerIndex)
         {
             this.loc = loc;
             this.img = img;
             this.vx = vx;
             this.vy = vy;
+            this.playerIndex = playerIndex;
         }
 
         public void Update(GamePadState gamePad)
