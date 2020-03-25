@@ -33,8 +33,10 @@ namespace Smackdown
             this.playerIndex = playerIndex;
         }
 
-        public void Update(GamePadState gamePad)
+        public void Update()
         {
+            GamePadState pad = GamePad.GetState(playerIndex);
+
             loc.X += vx;
             loc.Y += vy;
 
@@ -43,7 +45,7 @@ namespace Smackdown
             //check level collision
         }
 
-        public void Draw()
+        public void Draw(SpriteBatch batch)
         {
 
         }
