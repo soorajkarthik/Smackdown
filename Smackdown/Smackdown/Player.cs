@@ -13,23 +13,22 @@ namespace Smackdown
 {
     class Player
     {
-        Rectangle loc;
-        Texture2D img;
-        int vx, vy;
+        public Rectangle loc;
+        public Texture2D img;
+        public Vector2 velocity;
 
-        PlayerIndex playerIndex;
+        public PlayerIndex playerIndex;
 
-        public Player(): this(new Rectangle(), null, 0, 0, PlayerIndex.One)
+        public Player(): this(new Rectangle(), null, new Vector2(), PlayerIndex.One)
         {
 
         }
 
-        public Player(Rectangle loc, Texture2D img, int vx, int vy, PlayerIndex playerIndex)
+        public Player(Rectangle loc, Texture2D img, Vector2 velocity, PlayerIndex playerIndex)
         {
             this.loc = loc;
             this.img = img;
-            this.vx = vx;
-            this.vy = vy;
+            this.velocity = velocity;
             this.playerIndex = playerIndex;
         }
 
@@ -37,8 +36,8 @@ namespace Smackdown
         {
             GamePadState pad = GamePad.GetState(playerIndex);
 
-            loc.X += vx;
-            loc.Y += vy;
+            loc.X += (int) velocity.X;
+            loc.Y += (int) velocity.Y;
 
             //vy -= GRAVITY;
 
