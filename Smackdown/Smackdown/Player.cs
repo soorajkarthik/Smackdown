@@ -32,8 +32,8 @@ namespace Smackdown
 
         private const float MaxJumpTime = 0.35f;
         private const float JumpLauchVelocity = -4000.0f;
-        private const float GravityAcceleration = 3500.0f;
-        private const float MaxFallSpeed = 600.0f;
+        private const float GravityAcceleration = 7000.0f;
+        private const float MaxFallSpeed = 1000.0f;
         private const float JumpControlPower = 0.14f;
 
         private const float MoveStickScale = 1.0f;
@@ -60,7 +60,19 @@ namespace Smackdown
                 float horizMovement = GetInput();
 
                 HandlePhysics(gameTime, horizMovement);
-                
+
+                //temporary code
+                if (position.Y >= 200)
+                {
+                    position.Y = 200;
+                    isOnGround = true;
+                }
+                else
+                {
+                    isOnGround = false;
+                }
+                //end of temporary code
+
                 velocity = new Vector2(0, 0);
                 isJumping = false;
             }
