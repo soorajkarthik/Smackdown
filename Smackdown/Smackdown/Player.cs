@@ -13,40 +13,141 @@ namespace Smackdown
 {
     class Player
     {
-        public Rectangle loc;
-        public Texture2D img;
+        public Vector2 position;
+        public Texture2D img; //replace with animation later
+        private SpriteEffects flip;
         public Vector2 velocity;
+        public bool isAlive;
+        public bool isOnGround;       
+        private bool isJumping;
+        private bool wasJumping;
+        private float jumpTime;
 
         public PlayerIndex playerIndex;
+        
+        private const float MoveAcceleration = 14000f;
+        private const float MaxMoveSpeed = 2000f;
+        private const float GroundDragFactor = 0.58f;
+        private const float AirDragFactor = 0.65f;
 
-        public Player(): this(new Rectangle(), null, new Vector2(), PlayerIndex.One)
+        private const float MaxJumpTime = 0.35f;
+        private const float JumpLauchVelocity = -4000.0f;
+        private const float GravityAcceleration = 3500.0f;
+        private const float MaxFallSpeed = 600.0f;
+        private const float JumpControlPower = 0.14f;
+
+        private const float MoveStickScale = 1.0f;
+
+        public Player(): this(new Vector2(), null, PlayerIndex.One)
         {
 
         }
 
-        public Player(Rectangle loc, Texture2D img, Vector2 velocity, PlayerIndex playerIndex)
+        public Player(Vector2 pos, Texture2D img, PlayerIndex playerIndex)
         {
-            this.loc = loc;
+            this.position = pos;
             this.img = img;
-            this.velocity = velocity;
+            this.velocity = new Vector2(0, 0);
             this.playerIndex = playerIndex;
+            isAlive = true;
+            flip = SpriteEffects.None;
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
-            GamePadState pad = GamePad.GetState(playerIndex);
+            if (isAlive)
+            {
+                float horizMovement = GetInput();
 
-            loc.X += (int) velocity.X;
-            loc.Y += (int) velocity.Y;
-
-            //vy -= GRAVITY;
-
-            //check level collision
+                HandlePhysics(gameTime, horizMovement);
+                
+                velocity = new Vector2(0, 0);
+                isJumping = false;
+            }
         }
 
-        public void Draw(SpriteBatch batch)
+        private float GetInput()
+        {
+            GamePadState gps = GamePad.GetState(playerIndex);
+            float horizMovement = gps.ThumbSticks.Left.X * MoveStickScale;
+            isJumping =
+               gps.IsButtonDown(Buttons.A) ||
+               gps.ThumbSticks.Left.Y > 0.5;
+
+            return horizMovement;
+        }
+
+        public void HandlePhysics(GameTime gameTime, float horizMovement)
+        {
+            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Vector2 previousPosition = position;
+
+            velocity.X += horizMovement * MoveAcceleration * elapsed;
+            velocity.Y = MathHelper.Clamp(velocity.Y + GravityAcceleration * elapsed, -MaxFallSpeed, MaxFallSpeed);
+
+            velocity.Y = DoJump(velocity.Y, gameTime);
+
+            if (isOnGround)
+                velocity.X *= GroundDragFactor;
+            else
+                velocity.X *= AirDragFactor;
+
+            velocity.X = MathHelper.Clamp(velocity.X, -MaxMoveSpeed, MaxMoveSpeed);
+
+            position += velocity * elapsed;
+            position = new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y));
+
+            HandleCollisions();
+
+            if (position.X == previousPosition.X)
+                velocity.X = 0;
+
+            if (position.Y == previousPosition.Y)
+                velocity.Y = 0;
+        }
+
+        private float DoJump(float yVel, GameTime gameTime)
+        {
+            if (isJumping)
+            {
+                if ((!wasJumping && isOnGround) || jumpTime > 0f)
+                {
+                    jumpTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                }
+
+                if (0f < jumpTime && jumpTime <= MaxJumpTime)
+                {
+                    yVel = JumpLauchVelocity * (1.0f - (float)Math.Pow(jumpTime / MaxJumpTime, JumpControlPower));
+                }
+                else
+                {
+                    jumpTime = 0f;
+                }
+            }
+            else
+            {
+                jumpTime = 0f;
+            }
+
+            wasJumping = isJumping;
+
+            return yVel;
+        }
+
+        private void HandleCollisions()
         {
 
+        }
+
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            if (velocity.X < 0)
+                flip = SpriteEffects.FlipHorizontally;
+            else
+                flip = SpriteEffects.None;
+            
+            spriteBatch.Draw(img, position, null, Color.White, 0.0f, new Vector2(img.Width/2, img.Height/2), 1.0f, flip, 0.0f);
         }
     }
 }

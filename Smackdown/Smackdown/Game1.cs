@@ -30,6 +30,7 @@ namespace Smackdown
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Player temp;
 
         GameState gameState;
 
@@ -50,6 +51,7 @@ namespace Smackdown
             // TODO: Add your initialization logic here
 
             base.Initialize();
+            
         }
 
         /// <summary>
@@ -60,6 +62,7 @@ namespace Smackdown
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            temp = new Player(new Vector2(100, 100), Content.Load<Texture2D>("temp"), PlayerIndex.One);
 
             // TODO: use this.Content to load your game content here
         }
@@ -84,6 +87,7 @@ namespace Smackdown
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
+            temp.Update(gameTime);
             // TODO: Add your update logic here
             
             base.Update(gameTime);
@@ -98,8 +102,10 @@ namespace Smackdown
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-
+            spriteBatch.Begin();
+            temp.Draw(spriteBatch);
             base.Draw(gameTime);
+            spriteBatch.End();
         }
     }
 }

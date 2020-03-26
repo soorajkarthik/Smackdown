@@ -38,7 +38,6 @@ namespace Smackdown
 
             rect.X = (int)x;
             rect.Y = (int)y;
-            //hii
             //check wall collisions with level here
 
         }
