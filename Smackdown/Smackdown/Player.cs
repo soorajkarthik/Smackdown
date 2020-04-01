@@ -25,16 +25,16 @@ namespace Smackdown
 
         public PlayerIndex playerIndex;
         
-        private const float MoveAcceleration = 14000f;
-        private const float MaxMoveSpeed = 2000f;
-        private const float GroundDragFactor = 0.58f;
-        private const float AirDragFactor = 0.65f;
+        private readonly float MoveAcceleration = 14000f;
+        private readonly float MaxMoveSpeed = 2000f;
+        private readonly float GroundDragFactor = 0.58f;
+        private readonly float AirDragFactor = 0.65f;
 
-        private const float MaxJumpTime = 0.35f;
-        private const float JumpLauchVelocity = -4000.0f;
-        private const float GravityAcceleration = 7000.0f;
-        private const float MaxFallSpeed = 1000.0f;
-        private const float JumpControlPower = 0.14f;
+        private readonly float MaxJumpTime = 0.35f;
+        private readonly float JumpLauchVelocity = -4000.0f;
+        private readonly float GravityAcceleration = 7000.0f;
+        private readonly float MaxFallSpeed = 1000.0f;
+        private readonly float JumpControlPower = 0.14f;
 
         private const float MoveStickScale = 1.0f;
 
