@@ -34,6 +34,8 @@ namespace Smackdown
 
         GameState gameState;
 
+        Map map; //TODO: implement
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
