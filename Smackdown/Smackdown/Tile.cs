@@ -27,17 +27,25 @@ namespace Smackdown
 
         public CollisionType collisionType;
 
-        public Tile() : this(new Rectangle(), null)
+        public Tile() : this(0, 0, null)
         {
         }
 
-        public Tile(Rectangle loc, Texture2D img): this(loc, img, CollisionType.Passable)
+        public Tile(Rectangle loc, Texture2D img): this(loc.X, loc.Y, img, CollisionType.Passable)
         {
         }
 
-        public Tile(Rectangle loc, Texture2D img, CollisionType collisionType)
+        public Tile(int x, int y, Texture2D img) : this(x, y, img, CollisionType.Passable)
         {
-            this.loc = loc;
+        }
+
+        public Tile(Rectangle loc, Texture2D img, CollisionType collisionType) : this(loc.X, loc.Y, img, collisionType)
+        {
+        }
+
+        public Tile (int x, int y, Texture2D img, CollisionType collisionType)
+        {
+            loc = new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
             this.img = img;
             this.collisionType = collisionType;
         }
