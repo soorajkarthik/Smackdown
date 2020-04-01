@@ -12,7 +12,7 @@ namespace Smackdown
         private double x, y;
         public Rectangle rect;
         public Vector2 velocity;
-        //private Level level ----- uncomment when level class is done
+        //private Map map ----- uncomment when map class is done
 
         private static Texture2D tempTexture;
 
