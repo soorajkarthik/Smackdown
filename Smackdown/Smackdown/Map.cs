@@ -58,5 +58,18 @@ namespace Smackdown
             //TODO: add code to get collision type based on number of text file
             return Tile.CollisionType.Passable;
         }
+
+        public Rectangle checkCollisions(Rectangle rect)
+        {
+            //TODO: implement this
+            return rect;
+        }
+
+        public void Draw(SpriteBatch batch)
+        {
+            foreach (Tile tile in tileArray) {
+                tile.Draw(batch);
+            }
+        }
     }
 }

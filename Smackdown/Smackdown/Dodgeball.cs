@@ -12,7 +12,6 @@ namespace Smackdown
         private double x, y;
         public Rectangle rect;
         public Vector2 velocity;
-        //private Map map ----- uncomment when map class is done
 
         private static Texture2D tempTexture;
 
@@ -29,7 +28,7 @@ namespace Smackdown
             velocity = vel;
         }
 
-        public void Update()
+        public void Update(Map map)
         {
             //Once level class is finished, do level.getGravity
             velocity.Y += 2;
@@ -39,7 +38,7 @@ namespace Smackdown
             rect.X = (int)x;
             rect.Y = (int)y;
             //check wall collisions with level here
-
+            //map.checkCollisons(rect);
         }
 
         public void Draw(SpriteBatch spriteBatch)
