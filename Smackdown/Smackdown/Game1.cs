@@ -30,16 +30,21 @@ namespace Smackdown
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+
         Player temp;
+        Player[] players;
 
         GameState gameState;
 
-        Map map; //TODO: implement
+        Map map;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            this.IsMouseVisible = true;
+
         }
 
         /// <summary>
@@ -51,6 +56,13 @@ namespace Smackdown
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            gameState = GameState.MainMenu;
+
+            players = new Player[2];
+
+            map = new Map();
+            //add filepath to init map
+            //map.loadMap(@"");
 
             base.Initialize();
             
