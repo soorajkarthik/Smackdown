@@ -16,6 +16,7 @@ namespace Smackdown
         public enum CollisionType
         {
             Passable,
+            PassableFromBottom,
             Impassable
         }
 
@@ -28,18 +29,22 @@ namespace Smackdown
 
         public Tile() : this(new Rectangle(), null)
         {
-
         }
 
-        public Tile(Rectangle loc, Texture2D img)
+        public Tile(Rectangle loc, Texture2D img): this(loc, img, CollisionType.Passable)
+        {
+        }
+
+        public Tile(Rectangle loc, Texture2D img, CollisionType collisionType)
         {
             this.loc = loc;
             this.img = img;
+            this.collisionType = collisionType;
         }
 
         public void Draw(SpriteBatch batch)
         {
-            
+            batch.Draw(img, loc, Color.White);
         }
     }
 }
