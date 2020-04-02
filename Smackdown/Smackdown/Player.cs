@@ -105,7 +105,7 @@ namespace Smackdown
                 velocity.X *= AirDragFactor;
 
             velocity.X = MathHelper.Clamp(velocity.X, -MaxMoveSpeed, MaxMoveSpeed);
-
+           
             position += velocity * elapsed;
             position = new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y));
 
