@@ -15,18 +15,19 @@ namespace Smackdown
     {
         public enum CollisionType
         {
-            Passable,
-            PassableFromBottom,
-            Impassable
+            Passable = 0,
+            PassableFromBottom = 1,
+            Impassable = 2
         }
 
-        public readonly int TILE_SIZE = 64;
+        public readonly int TILE_SIZE = 48;
 
         public Rectangle loc;
         Rectangle imgSource;
 
         public CollisionType collisionType;
 
+        //a bunch of constructors bc idk y
         public Tile() : this(0, 0, new Rectangle())
         {
         }
@@ -35,17 +36,18 @@ namespace Smackdown
         {
         }
 
-        public Tile(int x, int y, Rectangle imgSource) : this(x, y, imgSource, CollisionType.Passable)
+        public Tile(int x_coord, int y_coord, Rectangle imgSource) : this(x_coord, y_coord, imgSource, CollisionType.Passable)
         {
         }
 
         public Tile(Rectangle loc, Rectangle imgSource, CollisionType collisionType) : this(loc.X, loc.Y, imgSource, collisionType)
         {
         }
-
-        public Tile (int x, int y, Rectangle imgSource, CollisionType collisionType)
+        
+        //actual constructor
+        public Tile (int x_coord, int y_coord, Rectangle imgSource, CollisionType collisionType)
         {
-            loc = new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
+            loc = new Rectangle(x_coord * TILE_SIZE, y_coord * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             this.imgSource = imgSource;
             this.collisionType = collisionType;
         }

@@ -45,6 +45,8 @@ namespace Smackdown
 
             this.IsMouseVisible = true;
 
+            this.graphics.PreferredBackBufferWidth = 48 * 20;
+            this.graphics.PreferredBackBufferHeight = 48 * 15;
         }
 
         /// <summary>
@@ -60,9 +62,8 @@ namespace Smackdown
 
             players = new Player[2];
 
-            map = new Map();
-            //add filepath to init map
-            //map.loadMap(@"");
+            map = new Map(20, 15);
+            map.loadMap(@"Content/maps/testmap.txt");
 
             base.Initialize();
             
@@ -76,9 +77,10 @@ namespace Smackdown
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            temp = new Player(new Vector2(100, 100), Content.Load<Texture2D>("temp"), PlayerIndex.One);
 
             // TODO: use this.Content to load your game content here
+            temp = new Player(new Vector2(100, 100), Content.Load<Texture2D>("temp"), PlayerIndex.One);
+            map.spriteSheet = this.Content.Load<Texture2D>("tiles/tileset");
         }
 
         /// <summary>
@@ -113,13 +115,15 @@ namespace Smackdown
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
             temp.Draw(spriteBatch);
-            base.Draw(gameTime);
+            map.Draw(spriteBatch);
             spriteBatch.End();
+
+            base.Draw(gameTime);
         }
     }
 }
