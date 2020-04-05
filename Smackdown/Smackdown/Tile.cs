@@ -23,36 +23,36 @@ namespace Smackdown
         public readonly int TILE_SIZE = 64;
 
         public Rectangle loc;
-        Texture2D img;
+        Rectangle imgSource;
 
         public CollisionType collisionType;
 
-        public Tile() : this(0, 0, null)
+        public Tile() : this(0, 0, new Rectangle())
         {
         }
 
-        public Tile(Rectangle loc, Texture2D img): this(loc.X, loc.Y, img, CollisionType.Passable)
+        public Tile(Rectangle loc, Rectangle imgSource): this(loc.X, loc.Y, imgSource, CollisionType.Passable)
         {
         }
 
-        public Tile(int x, int y, Texture2D img) : this(x, y, img, CollisionType.Passable)
+        public Tile(int x, int y, Rectangle imgSource) : this(x, y, imgSource, CollisionType.Passable)
         {
         }
 
-        public Tile(Rectangle loc, Texture2D img, CollisionType collisionType) : this(loc.X, loc.Y, img, collisionType)
+        public Tile(Rectangle loc, Rectangle imgSource, CollisionType collisionType) : this(loc.X, loc.Y, imgSource, collisionType)
         {
         }
 
-        public Tile (int x, int y, Texture2D img, CollisionType collisionType)
+        public Tile (int x, int y, Rectangle imgSource, CollisionType collisionType)
         {
             loc = new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
-            this.img = img;
+            this.imgSource = imgSource;
             this.collisionType = collisionType;
         }
 
-        public void Draw(SpriteBatch batch)
+        public void Draw(SpriteBatch batch, Texture2D img)
         {
-            batch.Draw(img, loc, Color.White);
+            batch.Draw(img, loc, imgSource, Color.White);
         }
     }
 }

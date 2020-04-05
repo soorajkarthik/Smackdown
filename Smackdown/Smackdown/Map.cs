@@ -51,6 +51,12 @@ namespace Smackdown
         public Texture2D getImage(string tileType)
         {
             //TODO: add code to get img based on number in text file
+            switch (tileType)
+            {
+                case "0":
+                    return 
+                    break;
+            }
             return null;
         }
 
