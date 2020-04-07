@@ -205,7 +205,7 @@ namespace Smackdown
                             }
                             else if (collision == Tile.CollisionType.Impassable)
                             {
-                                position = new Vector2(position.X + depth.X, position.Y);
+                                position = new Vector2(position.X + depth.X/2, position.Y);
                             }
                         }
                     }
