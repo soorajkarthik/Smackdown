@@ -20,7 +20,7 @@ namespace Smackdown
             Impassable = 2
         }
 
-        public readonly int TILE_SIZE = 48;
+        public static readonly int TILE_SIZE = 48;
 
         public Rectangle loc;
         Rectangle imgSource;

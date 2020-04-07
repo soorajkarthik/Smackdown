@@ -79,7 +79,7 @@ namespace Smackdown
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            temp = new Player(new Vector2(100, 100), Content.Load<Texture2D>("temp"), PlayerIndex.One);
+            temp = new Player(new Vector2(100, 100), Content.Load<Texture2D>("temp2"), PlayerIndex.One, map);
             map.spriteSheet = this.Content.Load<Texture2D>("tiles/tileset");
         }
 

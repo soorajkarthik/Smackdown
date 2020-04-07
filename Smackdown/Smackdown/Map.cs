@@ -16,6 +16,7 @@ namespace Smackdown
     {
         public Tile[,] tileArray;
         public Texture2D spriteSheet;
+        private int rows, cols;
 
         public Map() : this(1, 1)
         {
@@ -29,6 +30,8 @@ namespace Smackdown
         {
             this.tileArray = new Tile[rows, cols];
             this.spriteSheet = spriteSheet;
+            this.rows = rows;
+            this.cols = cols;
         }
 
         public void loadMap(string filepath)
@@ -107,6 +110,24 @@ namespace Smackdown
                     return Tile.CollisionType.PassableFromBottom;
             }
         }
+
+        public Tile.CollisionType getCollisionAtCoordinates(int x, int y)
+        {
+            if (x < 0 || x >= rows || y < 0 || y >= cols)
+                return Tile.CollisionType.Impassable;
+            
+            return tileArray[x, y].collisionType;
+        }
+
+        public Rectangle getTileBounds(int x, int y)
+        {
+            
+            if (x < 0 || y < 0 || x >= rows || y >= cols)
+                return new Rectangle(x * Tile.TILE_SIZE, y * Tile.TILE_SIZE, Tile.TILE_SIZE, Tile.TILE_SIZE);
+
+            return new Rectangle(x * Tile.TILE_SIZE, (y * Tile.TILE_SIZE) + 5, Tile.TILE_SIZE, Tile.TILE_SIZE - 5);
+        
+    }
 
         //check collision of this rect to all tiles and return a new rect that accounts for and deals with collisions 
         //(i.e move parameter rect away from collision and return)
