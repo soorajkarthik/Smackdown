@@ -28,14 +28,14 @@ namespace Smackdown
         public Map map;
 
         private readonly float MoveAcceleration = 30000f;
-        private readonly float MaxMoveSpeed = 1000f;
+        private readonly float MaxMoveSpeed = 2000f;
         private readonly float GroundDragFactor = 0.58f;
-        private readonly float AirDragFactor = 0.85f;
+        private readonly float AirDragFactor = 0.65f;
 
-        private readonly float MaxJumpTime = 0.61f;
-        private readonly float JumpLauchVelocity = -3000.0f;
-        private readonly float GravityAcceleration = 20000f;
-        private readonly float MaxFallSpeed = 10000f;
+        private readonly float MaxJumpTime = 0.35f;
+        private readonly float JumpLauchVelocity = -5000.0f;
+        private readonly float GravityAcceleration = 21000f;
+        private readonly float MaxFallSpeed = 30000f;
         private readonly float JumpControlPower = 0.14f;
 
         private const float MoveStickScale = 1.0f;
