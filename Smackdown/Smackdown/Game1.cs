@@ -16,6 +16,8 @@ namespace Smackdown
     /// </summary>
     public class Game1 : Microsoft.Xna.Framework.Game
     {
+        Texture2D backgroundTexture;
+
         enum GameState
         {
             MainMenu,
@@ -63,7 +65,7 @@ namespace Smackdown
             players = new Player[2];
 
             map = new Map(20, 15);
-            map.loadMap(@"Content/maps/testmap.txt");
+            map.loadMap(@"Content/maps/testmap2.txt");
 
             base.Initialize();
             
@@ -79,7 +81,9 @@ namespace Smackdown
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+
             temp = new Player(new Vector2(100, 100), Content.Load<Texture2D>("temp2"), PlayerIndex.One, map);
+            backgroundTexture = Content.Load<Texture2D>("tiles/background1");
             map.spriteSheet = this.Content.Load<Texture2D>("tiles/tileset");
         }
 
@@ -119,8 +123,12 @@ namespace Smackdown
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
-            temp.Draw(spriteBatch);
+
+            spriteBatch.Draw(backgroundTexture, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.DarkSlateBlue);
+
+            
             map.Draw(spriteBatch);
+            temp.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);

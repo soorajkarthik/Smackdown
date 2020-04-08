@@ -14,6 +14,7 @@ namespace Smackdown
 {
     class Map
     {
+       
         public Tile[,] tileArray;
         public Texture2D spriteSheet;
         private int rows, cols;
