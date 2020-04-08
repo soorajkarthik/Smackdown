@@ -14,9 +14,10 @@ namespace Smackdown
 {
     class Map
     {
+       
         public Tile[,] tileArray;
         public Texture2D spriteSheet;
-        private int rows, cols;
+        public int rows, cols;
 
         public Map() : this(1, 1)
         {
@@ -114,7 +115,7 @@ namespace Smackdown
         public Tile.CollisionType getCollisionAtCoordinates(int x, int y)
         {
             if (x < 0 || x >= rows || y < 0 || y >= cols)
-                return Tile.CollisionType.Impassable;
+                return Tile.CollisionType.Passable;
             
             return tileArray[x, y].collisionType;
         }

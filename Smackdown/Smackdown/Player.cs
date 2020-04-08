@@ -27,15 +27,15 @@ namespace Smackdown
         public PlayerIndex playerIndex;
         public Map map;
 
-        private readonly float MoveAcceleration = 14000f;
-        private readonly float MaxMoveSpeed = 1000f;
+        private readonly float MoveAcceleration = 30000f;
+        private readonly float MaxMoveSpeed = 2000f;
         private readonly float GroundDragFactor = 0.58f;
-        private readonly float AirDragFactor = 0.85f;
+        private readonly float AirDragFactor = 0.65f;
 
         private readonly float MaxJumpTime = 0.35f;
-        private readonly float JumpLauchVelocity = -4000.0f;
-        private readonly float GravityAcceleration = 10000.0f;
-        private readonly float MaxFallSpeed = 5000.0f;
+        private readonly float JumpLauchVelocity = -5000.0f;
+        private readonly float GravityAcceleration = 21000f;
+        private readonly float MaxFallSpeed = 30000f;
         private readonly float JumpControlPower = 0.14f;
 
         private const float MoveStickScale = 1.0f;
@@ -139,6 +139,19 @@ namespace Smackdown
 
             if (position.Y == previousPosition.Y)
                 velocity.Y = 0;
+
+            if (position.Y > map.cols * Tile.TILE_SIZE)
+            {
+                position.Y = 0 - localBounds.Height + 60;
+            }
+            //if (position.X > map.rows * Tile.TILE_SIZE)
+            //{
+            //    position.X = 0 - localBounds.Width + 60;
+            //}
+            //if (position.X + localBounds.Width < 0)
+            //{
+            //    position.X = map.rows * Tile.TILE_SIZE - 40;
+            //}
         }
 
         private float DoJump(float yVel, GameTime gameTime)
