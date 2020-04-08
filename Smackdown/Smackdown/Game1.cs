@@ -119,8 +119,8 @@ namespace Smackdown
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
-            temp.Draw(spriteBatch);
             map.Draw(spriteBatch);
+            temp.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);
