@@ -139,6 +139,19 @@ namespace Smackdown
 
             if (position.Y == previousPosition.Y)
                 velocity.Y = 0;
+
+            if (position.Y > map.cols * Tile.TILE_SIZE)
+            {
+                position.Y = 0 - localBounds.Height + 60;
+            }
+            //if (position.X > map.rows * Tile.TILE_SIZE)
+            //{
+            //    position.X = 0 - localBounds.Width + 60;
+            //}
+            //if (position.X + localBounds.Width < 0)
+            //{
+            //    position.X = map.rows * Tile.TILE_SIZE - 40;
+            //}
         }
 
         private float DoJump(float yVel, GameTime gameTime)

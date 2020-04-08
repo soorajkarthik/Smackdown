@@ -17,6 +17,9 @@ namespace Smackdown
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         Texture2D backgroundTexture;
+        SoundEffect maintheme;
+        SoundEffect battle1;
+        SoundEffect battle2;
 
         enum GameState
         {
@@ -85,6 +88,13 @@ namespace Smackdown
             temp = new Player(new Vector2(100, 100), Content.Load<Texture2D>("temp2"), PlayerIndex.One, map);
             backgroundTexture = Content.Load<Texture2D>("tiles/background1");
             map.spriteSheet = this.Content.Load<Texture2D>("tiles/tileset");
+
+            maintheme = Content.Load<SoundEffect>("music/Smackdown Main Theme");
+            battle2 = Content.Load<SoundEffect>("music/Smackdown_Battle_Theme_02");
+
+            //TEMP MUSIC
+            battle2.Play();
+
         }
 
         /// <summary>
