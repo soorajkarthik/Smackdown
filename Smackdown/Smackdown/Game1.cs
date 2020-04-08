@@ -47,8 +47,8 @@ namespace Smackdown
 
             this.IsMouseVisible = true;
 
-            this.graphics.PreferredBackBufferWidth = 48 * 20;
-            this.graphics.PreferredBackBufferHeight = 48 * 15;
+            this.graphics.PreferredBackBufferWidth = 48 * 30;
+            this.graphics.PreferredBackBufferHeight = 48 * 20;
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace Smackdown
 
             players = new Player[2];
 
-            map = new Map(20, 15);
+            map = new Map(30, 20);
             map.loadMap(@"Content/maps/testmap2.txt");
 
             base.Initialize();
