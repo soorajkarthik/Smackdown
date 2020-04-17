@@ -24,6 +24,8 @@ namespace Smackdown
         private float jumpTime;
         private float previousBottom;
 
+        GamePadState gps;
+
         public PlayerIndex playerIndex;
         public Map map;
 
@@ -39,6 +41,8 @@ namespace Smackdown
         private readonly float JumpControlPower = 0.14f;
 
         private const float MoveStickScale = 1.0f;
+
+        List<Dodgeball> activeBalls = new List<Dodgeball>();
 
         private Vector2 origin
         {
@@ -61,12 +65,14 @@ namespace Smackdown
             }
         }
 
-        public Player(): this(new Vector2(), null, PlayerIndex.One, null)
+        Texture2D ballTex;
+
+        public Player(): this(new Vector2(), null, PlayerIndex.One, null, null)
         {
 
         }
 
-        public Player(Vector2 pos, Texture2D img, PlayerIndex playerIndex, Map m)
+        public Player(Vector2 pos, Texture2D img, PlayerIndex playerIndex, Map m, Texture2D ballT)
         {
             this.position = pos;
             this.img = img;
@@ -75,6 +81,7 @@ namespace Smackdown
             isAlive = true;
             flip = SpriteEffects.None;
 
+
             int width = img.Width - 4;
             int left = (img.Width - width) / 2;
             int height = img.Height - 4;
@@ -82,6 +89,8 @@ namespace Smackdown
 
             localBounds = new Rectangle(left, top, width, height);
             map = m;
+            ballTex = ballT;
+            gps = GamePad.GetState(playerIndex);
         }
 
         public void Update(GameTime gameTime)
@@ -99,16 +108,26 @@ namespace Smackdown
                 velocity = new Vector2(0, 0);
                 isJumping = false;
             }
+
+            //updates player's balls
+            for (int i = 0; i < activeBalls.Count; i++)
+            {
+                activeBalls[i].Update(gameTime);
+            }
         }
 
         private float GetInput()
         {
-            GamePadState gps = GamePad.GetState(playerIndex);
+            GamePadState oldgps = gps;
+            gps = GamePad.GetState(playerIndex);
             float horizMovement = gps.ThumbSticks.Left.X * MoveStickScale;
             isJumping =
                gps.IsButtonDown(Buttons.A) ||
-               gps.ThumbSticks.Left.Y > 0.5;
-
+               gps.ThumbSticks.Left.Y > 0.5 || gps.IsButtonDown(Buttons.LeftShoulder);
+            if (gps.IsButtonDown(Buttons.RightTrigger) && !oldgps.IsButtonDown(Buttons.RightTrigger))
+            {
+                throwBall(new Vector2(gps.ThumbSticks.Right.X, gps.ThumbSticks.Right.Y));
+            }
             return horizMovement;
         }
 
@@ -152,6 +171,9 @@ namespace Smackdown
             //{
             //    position.X = map.rows * Tile.TILE_SIZE - 40;
             //}
+
+
+            
         }
 
         private float DoJump(float yVel, GameTime gameTime)
@@ -180,6 +202,15 @@ namespace Smackdown
             wasJumping = isJumping;
 
             return yVel;
+        }
+
+        private void throwBall(Vector2 throwVector)
+        {
+            //later switch texture by ball type
+            activeBalls.Add(new Dodgeball(new Rectangle((int) position.X, (int) position.Y - 20, 40, 40), throwVector, map, ballTex));
+            if (activeBalls.Count > 0) {
+                activeBalls[activeBalls.Count - 1].throwBall(throwVector);
+                    }
         }
 
         private void HandleCollisions()
@@ -231,6 +262,11 @@ namespace Smackdown
         public void Draw(SpriteBatch spriteBatch)
         {           
             spriteBatch.Draw(img, position, null, Color.White, 0.0f, new Vector2(img.Width/2, img.Height/2), 1.0f, flip, 0.0f);
+            for(int i = 0; i < activeBalls.Count; i++)
+            {
+                
+                activeBalls[i].Draw(spriteBatch);
+            }
         }
     }
 }
