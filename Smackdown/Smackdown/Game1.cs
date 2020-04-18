@@ -85,7 +85,7 @@ namespace Smackdown
 
             // TODO: use this.Content to load your game content here
 
-            temp = new Player(new Vector2(100, 100), Content.Load<Texture2D>("temp2"), PlayerIndex.One, map);
+            temp = new Player(new Vector2(100, 100), Content.Load<Texture2D>("sprites/players/blueknight"), PlayerIndex.One, map, Content.Load<Texture2D>("sprites/balls/dodgeball"));
             backgroundTexture = Content.Load<Texture2D>("tiles/background1");
             map.spriteSheet = this.Content.Load<Texture2D>("tiles/tileset");
 
@@ -93,7 +93,7 @@ namespace Smackdown
             battle2 = Content.Load<SoundEffect>("music/Smackdown_Battle_Theme_02");
 
             //TEMP MUSIC
-            battle2.Play();
+            //battle2.Play();
 
         }
 

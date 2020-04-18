@@ -11,18 +11,21 @@ using Microsoft.Xna.Framework.Media;
 
 namespace Smackdown
 {
-    class Player
+    class Player: Sprite
     {
         public Vector2 position;
-        public Texture2D img; //replace with animation later
         private SpriteEffects flip;
+        private string currentAnim = "Idle";
         public Vector2 velocity;
         public bool isAlive;
+        public bool DeadAnimationEnded;
         public bool isOnGround;       
         private bool isJumping;
         private bool wasJumping;
         private float jumpTime;
         private float previousBottom;
+
+        GamePadState gps;
 
         public PlayerIndex playerIndex;
         public Map map;
@@ -40,13 +43,9 @@ namespace Smackdown
 
         private const float MoveStickScale = 1.0f;
 
-        private Vector2 origin
-        {
-            get
-            {
-                return new Vector2(img.Width / 2, img.Height / 2);
-            }
-        }
+        List<Dodgeball> activeBalls = new List<Dodgeball>();
+
+       
 
         private Rectangle localBounds;
 
@@ -54,34 +53,76 @@ namespace Smackdown
         {
             get
             {
-                int left = (int)Math.Round(position.X - origin.X) + localBounds.X;
-                int top = (int)Math.Round(position.Y - origin.Y) + localBounds.Y;
+                int left = (int)Math.Round(position.X - Origin.X) + localBounds.X;
+                int top = (int)Math.Round(position.Y - Origin.Y) + localBounds.Y;
 
                 return new Rectangle(left, top, localBounds.Width, localBounds.Height);
             }
         }
 
-        public Player(): this(new Vector2(), null, PlayerIndex.One, null)
+        Texture2D ballTex;
+
+        public Player(): this(new Vector2(), null, PlayerIndex.One, null, null)
         {
 
         }
 
-        public Player(Vector2 pos, Texture2D img, PlayerIndex playerIndex, Map m)
+        public Player(Vector2 pos, Texture2D img, PlayerIndex playerIndex, Map m, Texture2D ballT): base(96, 96, 6)
         {
             this.position = pos;
-            this.img = img;
+            SpriteSheet = img;
             this.velocity = new Vector2(0, 0);
             this.playerIndex = playerIndex;
             isAlive = true;
             flip = SpriteEffects.None;
 
-            int width = img.Width - 4;
-            int left = (img.Width - width) / 2;
-            int height = img.Height - 4;
-            int top = img.Height - height;
+            map = m;
+            ballTex = ballT;
+            gps = GamePad.GetState(playerIndex);
+
+            LoadAnimations();
+        }
+
+        private void LoadAnimations()
+        {
+            Animation anim = new Animation();
+            anim.LoadAnimation("Idle", new List<int> { 0, 0, 6, 6, 7, 7, 7, 0 }, 3, true);
+            SpriteAnimations.Add("Idle", anim);
+
+            anim = new Animation();
+            anim.LoadAnimation("Walking", new List<int> { 9, 12, 9, 10 }, 5, true);
+            SpriteAnimations.Add("Walking", anim);
+
+            anim = new Animation();
+            anim.LoadAnimation("Jump", new List<int> { 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2}, 10, false);
+            anim.AnimationCallBack(() =>
+            {
+                currentAnim = "Idle";
+                SpriteAnimations[currentAnim].ResetPlay();
+            });
+            SpriteAnimations.Add("Jump", anim);
+
+            anim = new Animation();
+            anim.LoadAnimation("Land", new List<int> { 2, 0, 3 }, 3, false);
+            anim.AnimationCallBack(() =>
+            {
+                currentAnim = "Idle";
+                SpriteAnimations[currentAnim].ResetPlay();
+            });
+            SpriteAnimations.Add("Land", anim);
+
+            anim = new Animation();
+            anim.LoadAnimation("Dead", new List<int> { 0, 4, 4, 5, 5, 5, 5, 5, 16, 16, 16}, 3, false);
+            anim.AnimationCallBack(() => DeadAnimationEnded = true);
+            SpriteAnimations.Add("Dead", anim);
+
+            int width = FrameWidth - 4;
+            int left = (FrameWidth - width) / 2;
+            int height = FrameHeight - 4;
+            int top = FrameHeight - height;
 
             localBounds = new Rectangle(left, top, width, height);
-            map = m;
+            SpriteAnimations[currentAnim].ResetPlay();
         }
 
         public void Update(GameTime gameTime)
@@ -99,15 +140,58 @@ namespace Smackdown
                 velocity = new Vector2(0, 0);
                 isJumping = false;
             }
+
+            SpriteAnimations[currentAnim].Update(gameTime);
+
+            //updates player's balls
+            for (int i = 0; i < activeBalls.Count; i++)
+            {
+                activeBalls[i].Update(gameTime);
+            }
         }
 
         private float GetInput()
         {
-            GamePadState gps = GamePad.GetState(playerIndex);
+            GamePadState oldgps = gps;
+            gps = GamePad.GetState(playerIndex);
             float horizMovement = gps.ThumbSticks.Left.X * MoveStickScale;
             isJumping =
                gps.IsButtonDown(Buttons.A) ||
-               gps.ThumbSticks.Left.Y > 0.5;
+               gps.ThumbSticks.Left.Y > 0.5 || 
+               gps.IsButtonDown(Buttons.LeftShoulder);
+
+            if (gps.IsButtonDown(Buttons.RightTrigger) && !oldgps.IsButtonDown(Buttons.RightTrigger))
+            {
+                throwBall(new Vector2(gps.ThumbSticks.Right.X, gps.ThumbSticks.Right.Y));
+            }
+
+            if (isJumping && currentAnim != "Jump" && !isOnGround)
+            {
+                SpriteAnimations[currentAnim].Stop();
+                currentAnim = "Jump";
+                SpriteAnimations[currentAnim].ResetPlay();
+            }
+
+            if(isOnGround && wasJumping && currentAnim != "Land")
+            {
+                SpriteAnimations[currentAnim].Stop();
+                currentAnim = "Land";
+                SpriteAnimations[currentAnim].ResetPlay();
+            }
+
+            if (horizMovement != 0 && currentAnim != "Jump" && currentAnim != "Walking")
+            {
+                SpriteAnimations[currentAnim].Stop();
+                currentAnim = "Walking";
+                SpriteAnimations[currentAnim].ResetPlay();
+            }
+
+            else if (currentAnim != "Jump" && horizMovement == 0 && currentAnim == "Walking")
+            {
+                SpriteAnimations[currentAnim].Stop();
+                currentAnim = "Idle";
+                SpriteAnimations[currentAnim].ResetPlay();
+            }
 
             return horizMovement;
         }
@@ -152,6 +236,9 @@ namespace Smackdown
             //{
             //    position.X = map.rows * Tile.TILE_SIZE - 40;
             //}
+
+
+            
         }
 
         private float DoJump(float yVel, GameTime gameTime)
@@ -180,6 +267,15 @@ namespace Smackdown
             wasJumping = isJumping;
 
             return yVel;
+        }
+
+        private void throwBall(Vector2 throwVector)
+        {
+            //later switch texture by ball type
+            activeBalls.Add(new Dodgeball(new Rectangle((int) position.X, (int) position.Y - 20, 40, 40), throwVector, map, ballTex));
+            if (activeBalls.Count > 0) {
+                activeBalls[activeBalls.Count - 1].throwBall(throwVector);
+                    }
         }
 
         private void HandleCollisions()
@@ -229,8 +325,15 @@ namespace Smackdown
 
 
         public void Draw(SpriteBatch spriteBatch)
-        {           
-            spriteBatch.Draw(img, position, null, Color.White, 0.0f, new Vector2(img.Width/2, img.Height/2), 1.0f, flip, 0.0f);
+        {
+            Rectangle source = GetFrameRectangle(SpriteAnimations[currentAnim].FrameToDraw);        
+
+            spriteBatch.Draw(SpriteSheet, position, source, Color.White, 0.0f, Origin, 1.0f, flip, 0.0f);
+            for(int i = 0; i < activeBalls.Count; i++)
+            {
+                
+                activeBalls[i].Draw(spriteBatch);
+            }
         }
     }
 }
