@@ -5,7 +5,7 @@ namespace Smackdown
 {
     class Sprite
     {
-        public List<Texture2D> SpriteTextures { get; set; }
+        public Texture2D SpriteSheet { get; set; }
         public int FrameWidth;
         public int FrameHeight;
         private int framesPerRow;
@@ -16,7 +16,7 @@ namespace Smackdown
             FrameWidth = _frameWidth;
             FrameHeight = _frameHeight;
             framesPerRow = _framesPerRow;
-            SpriteTextures = new List<Texture2D>();
+            SpriteSheet = null;
             SpriteAnimations = new Dictionary<string, Animation>();
         }
 

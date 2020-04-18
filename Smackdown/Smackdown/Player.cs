@@ -70,7 +70,7 @@ namespace Smackdown
         public Player(Vector2 pos, Texture2D img, PlayerIndex playerIndex, Map m, Texture2D ballT): base(96, 96, 6)
         {
             this.position = pos;
-            SpriteTextures.Add(img);
+            SpriteSheet = img;
             this.velocity = new Vector2(0, 0);
             this.playerIndex = playerIndex;
             isAlive = true;
@@ -86,15 +86,15 @@ namespace Smackdown
         private void LoadAnimations()
         {
             Animation anim = new Animation();
-            anim.LoadAnimation("Idle", 0, new List<int> { 0, 0, 6, 6, 7, 7, 7, 0 }, 3, true);
+            anim.LoadAnimation("Idle", new List<int> { 0, 0, 6, 6, 7, 7, 7, 0 }, 3, true);
             SpriteAnimations.Add("Idle", anim);
 
             anim = new Animation();
-            anim.LoadAnimation("Walking", 0, new List<int> { 9, 12, 9, 10 }, 5, true);
+            anim.LoadAnimation("Walking", new List<int> { 9, 12, 9, 10 }, 5, true);
             SpriteAnimations.Add("Walking", anim);
 
             anim = new Animation();
-            anim.LoadAnimation("Jump", 0, new List<int> { 0, 0, 2, 2, 2, 2, 2, 3, 3, 3 }, 10, false);
+            anim.LoadAnimation("Jump", new List<int> { 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2}, 10, false);
             anim.AnimationCallBack(() =>
             {
                 currentAnim = "Idle";
@@ -103,7 +103,16 @@ namespace Smackdown
             SpriteAnimations.Add("Jump", anim);
 
             anim = new Animation();
-            anim.LoadAnimation("Dead", 0, new List<int> { 0, 4, 4, 5, 5, 5, 5, 5, 16, 16, 16}, 3, false);
+            anim.LoadAnimation("Land", new List<int> { 2, 0, 3 }, 3, false);
+            anim.AnimationCallBack(() =>
+            {
+                currentAnim = "Idle";
+                SpriteAnimations[currentAnim].ResetPlay();
+            });
+            SpriteAnimations.Add("Land", anim);
+
+            anim = new Animation();
+            anim.LoadAnimation("Dead", new List<int> { 0, 4, 4, 5, 5, 5, 5, 5, 16, 16, 16}, 3, false);
             anim.AnimationCallBack(() => DeadAnimationEnded = true);
             SpriteAnimations.Add("Dead", anim);
 
@@ -113,7 +122,7 @@ namespace Smackdown
             int top = FrameHeight - height;
 
             localBounds = new Rectangle(left, top, width, height);
-
+            SpriteAnimations[currentAnim].ResetPlay();
         }
 
         public void Update(GameTime gameTime)
@@ -163,10 +172,17 @@ namespace Smackdown
                 SpriteAnimations[currentAnim].ResetPlay();
             }
 
+            if(isOnGround && wasJumping && currentAnim != "Land")
+            {
+                SpriteAnimations[currentAnim].Stop();
+                currentAnim = "Land";
+                SpriteAnimations[currentAnim].ResetPlay();
+            }
+
             if (horizMovement != 0 && currentAnim != "Jump" && currentAnim != "Walking")
             {
                 SpriteAnimations[currentAnim].Stop();
-                currentAnim = "Dead";
+                currentAnim = "Walking";
                 SpriteAnimations[currentAnim].ResetPlay();
             }
 
@@ -312,7 +328,7 @@ namespace Smackdown
         {
             Rectangle source = GetFrameRectangle(SpriteAnimations[currentAnim].FrameToDraw);        
 
-            spriteBatch.Draw(SpriteTextures[0], position, source, Color.White, 0.0f, Origin, 1.0f, flip, 0.0f);
+            spriteBatch.Draw(SpriteSheet, position, source, Color.White, 0.0f, Origin, 1.0f, flip, 0.0f);
             for(int i = 0; i < activeBalls.Count; i++)
             {
                 

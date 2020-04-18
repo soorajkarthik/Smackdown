@@ -14,11 +14,7 @@ namespace Smackdown
             private set;
         }
 
-        public int TextureId
-        {
-            get;
-            private set;
-        }
+    
 
         public int FrameToDraw
         {
@@ -36,10 +32,9 @@ namespace Smackdown
         private bool isPlaying;
         private bool loopAnimation;
 
-        public void LoadAnimation(string _animationName, int _textureId, List<int> _frameList, int _framesPerSec, bool _loop)
+        public void LoadAnimation(string _animationName, List<int> _frameList, int _framesPerSec, bool _loop)
         {
             AnimationName = _animationName;
-            TextureId = _textureId;
             frameList = _frameList;
             frameCount = frameList.Count;
             framesPerSec = _framesPerSec;
@@ -66,15 +61,15 @@ namespace Smackdown
             isPlaying = false;
         }
 
-        public void AnimationCallBack(AnimationEndCallback _callback)
+        public void AnimationCallBack(AnimationEndCallback callback)
         {
-            callBack = _callback;
+            this.callBack = callback;
         }
 
-        public void Update(GameTime _gameTime)
+        public void Update(GameTime gameTime)
         {
             if (!isPlaying) return;
-            totalElapsed += (float)_gameTime.ElapsedGameTime.TotalSeconds;
+            totalElapsed += (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (totalElapsed <= timePerFrame) return;
             currentFrame++;
             currentFrame = currentFrame % frameCount;
