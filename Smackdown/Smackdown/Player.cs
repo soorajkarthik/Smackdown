@@ -206,7 +206,7 @@ namespace Smackdown
                             float absDepthX = Math.Abs(depth.X);
                             float absDepthY = Math.Abs(depth.Y);
 
-                            if (absDepthY < absDepthX || collision == Tile.CollisionType.PassableFromBottom)
+                            if (absDepthY < absDepthX || collision == Tile.CollisionType.Platform)
                             {
                                 if (previousBottom <= tileBounds.Top)
                                     isOnGround = true;

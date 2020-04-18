@@ -16,7 +16,7 @@ namespace Smackdown
         public enum CollisionType
         {
             Passable = 0,
-            PassableFromBottom = 1,
+            Platform = 1,
             Impassable = 2
         }
 

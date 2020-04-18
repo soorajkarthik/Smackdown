@@ -108,7 +108,7 @@ namespace Smackdown
                 case "2":
                 case "3":
                 case "4":
-                    return Tile.CollisionType.PassableFromBottom;
+                    return Tile.CollisionType.Platform;
             }
         }
 
