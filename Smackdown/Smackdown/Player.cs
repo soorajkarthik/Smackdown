@@ -94,16 +94,11 @@ namespace Smackdown
             SpriteAnimations.Add("Walking", anim);
 
             anim = new Animation();
-            anim.LoadAnimation("Jump", new List<int> { 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2}, 10, false);
-            anim.AnimationCallBack(() =>
-            {
-                currentAnim = "Idle";
-                SpriteAnimations[currentAnim].ResetPlay();
-            });
+            anim.LoadAnimation("Jump", new List<int> { 2}, 1, true);
             SpriteAnimations.Add("Jump", anim);
 
             anim = new Animation();
-            anim.LoadAnimation("Land", new List<int> { 2, 0, 3 }, 3, false);
+            anim.LoadAnimation("Land", new List<int> { 2, 3 , 3, 3, 3}, 10, false);
             anim.AnimationCallBack(() =>
             {
                 currentAnim = "Idle";
@@ -116,10 +111,10 @@ namespace Smackdown
             anim.AnimationCallBack(() => DeadAnimationEnded = true);
             SpriteAnimations.Add("Dead", anim);
 
-            int width = FrameWidth - 4;
+            int width = FrameWidth - 48;
             int left = (FrameWidth - width) / 2;
-            int height = FrameHeight - 4;
-            int top = FrameHeight - height;
+            int height = FrameHeight - 23;
+            int top = FrameHeight - height - 10;
 
             localBounds = new Rectangle(left, top, width, height);
             SpriteAnimations[currentAnim].ResetPlay();
@@ -158,21 +153,33 @@ namespace Smackdown
             isJumping =
                gps.IsButtonDown(Buttons.A) ||
                gps.ThumbSticks.Left.Y > 0.5 || 
-               gps.IsButtonDown(Buttons.LeftShoulder);
+               gps.IsButtonDown(Buttons.LeftTrigger);
 
             if (gps.IsButtonDown(Buttons.RightTrigger) && !oldgps.IsButtonDown(Buttons.RightTrigger))
             {
                 throwBall(new Vector2(gps.ThumbSticks.Right.X, gps.ThumbSticks.Right.Y));
+            } 
+
+            //For falling through platform
+            else if (gps.ThumbSticks.Left.Y <= -0.5)
+            {
+                int xCoord = (int)Math.Floor((float)bounds.Center.X / Tile.TILE_SIZE);
+                int feetYCoord = (int)Math.Ceiling((float)bounds.Bottom / Tile.TILE_SIZE) - 1;
+                if(map.getCollisionAtCoordinates(xCoord, feetYCoord) == Tile.CollisionType.Platform)
+                {
+                    position.Y += 1;
+                    previousBottom = int.MaxValue;
+                }
             }
 
-            if (isJumping && currentAnim != "Jump" && !isOnGround)
+            if (!isOnGround && currentAnim != "Jump")
             {
                 SpriteAnimations[currentAnim].Stop();
                 currentAnim = "Jump";
                 SpriteAnimations[currentAnim].ResetPlay();
             }
 
-            if(isOnGround && wasJumping && currentAnim != "Land")
+            if(isOnGround &&  currentAnim == "Jump")
             {
                 SpriteAnimations[currentAnim].Stop();
                 currentAnim = "Land";
@@ -212,7 +219,7 @@ namespace Smackdown
                 velocity.X *= AirDragFactor;
 
             velocity.X = MathHelper.Clamp(velocity.X, -MaxMoveSpeed, MaxMoveSpeed);
-           
+
             position += velocity * elapsed;
             position = new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y));
 
@@ -236,9 +243,6 @@ namespace Smackdown
             //{
             //    position.X = map.rows * Tile.TILE_SIZE - 40;
             //}
-
-
-            
         }
 
         private float DoJump(float yVel, GameTime gameTime)
@@ -273,9 +277,10 @@ namespace Smackdown
         {
             //later switch texture by ball type
             activeBalls.Add(new Dodgeball(new Rectangle((int) position.X, (int) position.Y - 20, 40, 40), throwVector, map, ballTex));
-            if (activeBalls.Count > 0) {
+            if (activeBalls.Count > 0)
+            {
                 activeBalls[activeBalls.Count - 1].throwBall(throwVector);
-                    }
+            }
         }
 
         private void HandleCollisions()
