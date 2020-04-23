@@ -86,7 +86,7 @@ namespace Smackdown
         private void LoadAnimations()
         {
             Animation anim = new Animation();
-            anim.LoadAnimation("Idle", new List<int> { 0, 0, 6, 6, 7, 7, 7, 0 }, 3, true);
+            anim.LoadAnimation("Idle", new List<int> { 0, 0, 6, 6, 7, 7, 7, 8, 8, 8}, 3, true);
             SpriteAnimations.Add("Idle", anim);
 
             anim = new Animation();

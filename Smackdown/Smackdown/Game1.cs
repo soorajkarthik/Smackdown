@@ -16,16 +16,10 @@ namespace Smackdown
     /// </summary>
     public class Game1 : Microsoft.Xna.Framework.Game
     {
-        Texture2D backgroundTexture;
-        SoundEffect maintheme;
-        SoundEffect battle1;
-        SoundEffect battle2;
-
         enum GameState
         {
             MainMenu,
             LevelSelection,
-            PlayerLoadScreen,
             Play,
             PauseMenu,
             GameOver,
@@ -33,15 +27,24 @@ namespace Smackdown
             Settings
         }
 
+        GameState gameState;
+        Player temp;
+        int numPlayers;
+        Map map;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        Player temp;
-        Player[] players;
+        SpriteFont largeFont;
+        SpriteFont medFont;
+        SpriteFont smallFont;
 
-        GameState gameState;
+        Texture2D emptyTex;
+        Texture2D backgroundTexture;
 
-        Map map;
+        SoundEffect maintheme;
+        SoundEffect battle1;
+        SoundEffect battle2;
 
         public Game1()
         {
@@ -63,13 +66,12 @@ namespace Smackdown
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            gameState = GameState.MainMenu;
-
-            players = new Player[2];
+            gameState = GameState.Play;
 
             map = new Map(30, 20);
+            numPlayers = 1; //GET THIS FROM START SCREEN
             map.loadMap(@"Content/maps/testmap2.txt");
-
+            
             base.Initialize();
             
         }
@@ -85,12 +87,20 @@ namespace Smackdown
 
             // TODO: use this.Content to load your game content here
 
-            temp = new Player(new Vector2(100, 100), Content.Load<Texture2D>("sprites/players/blueknight"), PlayerIndex.One, map, Content.Load<Texture2D>("sprites/balls/dodgeball"));
+            largeFont = Content.Load<SpriteFont>("fonts/SpriteFont1");
+            medFont = Content.Load<SpriteFont>("fonts/SpriteFont2");
+            smallFont = Content.Load<SpriteFont>("fonts/SpriteFont3");
+
             backgroundTexture = Content.Load<Texture2D>("tiles/background1");
-            map.spriteSheet = this.Content.Load<Texture2D>("tiles/tileset");
+            map.spriteSheet = Content.Load<Texture2D>("tiles/tileset");
+            emptyTex = Content.Load<Texture2D>("tiles/empty");
 
             maintheme = Content.Load<SoundEffect>("music/Smackdown Main Theme");
             battle2 = Content.Load<SoundEffect>("music/Smackdown_Battle_Theme_02");
+
+
+            temp = new Player(new Vector2(100, 100), Content.Load<Texture2D>("sprites/players/blueknight"), PlayerIndex.One, map, Content.Load<Texture2D>("sprites/balls/dodgeball"));
+
 
             //TEMP MUSIC
             //battle2.Play();
@@ -113,11 +123,28 @@ namespace Smackdown
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            //Allows the game to exit
+            GamePadState p1 = GamePad.GetState(PlayerIndex.One);
+            if (p1.IsButtonDown(Buttons.LeftShoulder) && p1.IsButtonDown(Buttons.RightShoulder))
                 this.Exit();
-
-            temp.Update(gameTime);
+            
+            switch(gameState)
+            {
+                case GameState.Play:
+                    temp.Update(gameTime);
+                    for (int i = 0; i < numPlayers; i++)
+                        if (GamePad.GetState((PlayerIndex)i).IsButtonDown(Buttons.Back))
+                            gameState = GameState.PauseMenu;
+                    break;
+                case GameState.PauseMenu:
+                    for(int i = 0; i < numPlayers; i++)
+                        if (GamePad.GetState((PlayerIndex)i).IsButtonDown(Buttons.Start))
+                            gameState = GameState.Play;
+                    break;
+                default:
+                    break;
+            }
+            
             // TODO: Add your update logic here
             
             base.Update(gameTime);
@@ -131,16 +158,28 @@ namespace Smackdown
         {
             GraphicsDevice.Clear(Color.Black);
 
-            // TODO: Add your drawing code here
             spriteBatch.Begin();
 
-            spriteBatch.Draw(backgroundTexture, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.DarkSlateBlue);
+            switch (gameState)
+            {
 
-            
-            map.Draw(spriteBatch);
-            temp.Draw(spriteBatch);
+                case GameState.Play:
+                    spriteBatch.Draw(backgroundTexture, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
+                    map.Draw(spriteBatch);
+                    temp.Draw(spriteBatch);
+                    break;
+
+                case GameState.PauseMenu:
+                    spriteBatch.Draw(backgroundTexture, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
+                    map.Draw(spriteBatch);
+                    temp.Draw(spriteBatch);
+                    spriteBatch.Draw(emptyTex, GraphicsDevice.Viewport.Bounds, Color.Black * 0.65f);
+                    spriteBatch.DrawString(largeFont, "Paused", new Vector2(535, 400), Color.White);
+                    spriteBatch.DrawString(medFont, "Press start to resume", new Vector2(420, 540), Color.White);
+                    break;
+            }
+
             spriteBatch.End();
-
             base.Draw(gameTime);
         }
     }
