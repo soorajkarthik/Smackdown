@@ -97,6 +97,7 @@
       <Name>SpriteFont1</Name>
       <Importer>FontDescriptionImporter</Importer>
       <Processor>FontDescriptionProcessor</Processor>
+      <SubType>Designer</SubType>
     </Compile>
     <Compile Include="fonts\SpriteFont2.spritefont">
       <Name>SpriteFont2</Name>
@@ -121,9 +122,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="maps\testmap.txt">
+    <None Include="maps\playerSpawnInfo.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Name>testmap</Name>
+      <Name>playerSpawnInfo</Name>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -141,7 +142,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="tiles\empty.png">
+    <Compile Include="menus\empty.png">
       <Name>empty</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>

@@ -32,16 +32,16 @@ namespace Smackdown
         private bool isPlaying;
         private bool loopAnimation;
 
-        public void LoadAnimation(string _animationName, List<int> _frameList, int _framesPerSec, bool _loop)
+        public void LoadAnimation(string name, List<int> frames, int fps, bool loop)
         {
-            AnimationName = _animationName;
-            frameList = _frameList;
+            AnimationName = name;
+            frameList = frames;
             frameCount = frameList.Count;
-            framesPerSec = _framesPerSec;
+            framesPerSec = fps;
             timePerFrame = (float)1 / framesPerSec;
             currentFrame = 0;
             totalElapsed = 0;
-            loopAnimation = _loop;
+            loopAnimation = loop;
         }
 
         public void Play()
@@ -77,8 +77,7 @@ namespace Smackdown
             if (!loopAnimation && currentFrame == 0)
             {
                 isPlaying = false;
-                if (callBack != null)
-                    callBack();
+                callBack?.Invoke();
             }
         }
     }

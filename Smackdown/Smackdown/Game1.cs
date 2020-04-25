@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using System.IO;
 
 namespace Smackdown
 {
@@ -29,8 +30,8 @@ namespace Smackdown
 
         private GameState gameState;
         private GamePadState oldp1gps;
-        private Player temp;
-        private int numPlayers;
+        private List<Player> players;
+        private int numPlayerSelectionIndex;
         private Map map;
 
         private GraphicsDeviceManager graphics;
@@ -69,9 +70,9 @@ namespace Smackdown
         {
             // TODO: Add your initialization logic here
             gameState = GameState.MainMenu;
+            numPlayerSelectionIndex = 0;
 
             map = new Map(30, 20);
-            numPlayers = 0; 
             map.loadMap(@"Content/maps/testmap2.txt");
             
             base.Initialize();
@@ -95,15 +96,11 @@ namespace Smackdown
 
             backgroundTexture = Content.Load<Texture2D>("tiles/background1");
             map.spriteSheet = Content.Load<Texture2D>("tiles/tileset");
-            emptyTex = Content.Load<Texture2D>("tiles/empty");
-            mainMenuTex = Content.Load<Texture2D>("tiles/empty"); //CHANGE THIS
+            emptyTex = Content.Load<Texture2D>("menus/empty");
+            mainMenuTex = Content.Load<Texture2D>("menus/empty"); //CHANGE THIS
 
             maintheme = Content.Load<SoundEffect>("music/Smackdown Main Theme");
             battle2 = Content.Load<SoundEffect>("music/Smackdown_Battle_Theme_02");
-
-
-            temp = new Player(new Vector2(100, 100), Content.Load<Texture2D>("sprites/players/blueknight"), PlayerIndex.One, map, Content.Load<Texture2D>("sprites/balls/dodgeball"));
-
 
             //TEMP MUSIC
             //battle2.Play();
@@ -134,26 +131,27 @@ namespace Smackdown
             switch(gameState)
             {
                 case GameState.MainMenu:
-                    if (p1gps.IsButtonDown(Buttons.LeftThumbstickRight) && !oldp1gps.IsButtonDown(Buttons.LeftThumbstickRight)) 
-                        numPlayers++;
+                    if (p1gps.IsButtonDown(Buttons.LeftThumbstickRight) && !oldp1gps.IsButtonDown(Buttons.LeftThumbstickRight))
+                        numPlayerSelectionIndex++;
                     else if (p1gps.IsButtonDown(Buttons.LeftThumbstickLeft) && !oldp1gps.IsButtonDown(Buttons.LeftThumbstickLeft))
-                        numPlayers+=3;
-                    if(p1gps.IsButtonDown(Buttons.Start))
+                        numPlayerSelectionIndex += 2;
+                    numPlayerSelectionIndex %= 3;
+                    if (p1gps.IsButtonDown(Buttons.Start))
                     {
+                        spawnPlayers(numPlayerSelectionIndex + 2); //accounting for the fact that we're using index for highlighting box                                            
                         gameState = GameState.Play;
                     }
-                    numPlayers %= 4;
                     break;
 
                 case GameState.Play:
-                    temp.Update(gameTime);
-                    for (int i = 0; i < numPlayers; i++)
+                    players.ForEach(player => player.Update(gameTime));
+                    for (int i = 0; i < numPlayerSelectionIndex; i++)
                         if (GamePad.GetState((PlayerIndex)i).IsButtonDown(Buttons.Back))
                             gameState = GameState.PauseMenu;
                     break;
 
                 case GameState.PauseMenu:
-                    for(int i = 0; i < numPlayers; i++)
+                    for(int i = 0; i < numPlayerSelectionIndex; i++)
                         if (GamePad.GetState((PlayerIndex)i).IsButtonDown(Buttons.Start))
                             gameState = GameState.Play;
                     break;
@@ -168,6 +166,22 @@ namespace Smackdown
             base.Update(gameTime);
         }
 
+        private void spawnPlayers(int numPlayers)
+        {
+            players = new List<Player>();
+            using (StreamReader reader = new StreamReader(@"Content/maps/playerSpawnInfo.txt"))
+            {
+                for(int i = 0; i < numPlayers; i++)
+                {
+                    String[] input = reader.ReadLine().Split(' ');
+                    Vector2 pos = new Vector2(Convert.ToInt32(input[0]), Convert.ToInt32(input[1]));
+                    players.Add(new Player(pos, Content.Load<Texture2D>(input[2]), (PlayerIndex)i, map, Content.Load<Texture2D>(input[3])));
+                }
+            }
+        }
+
+
+
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
@@ -181,19 +195,19 @@ namespace Smackdown
             switch (gameState)
             {
                 case GameState.MainMenu:
-                    spriteBatch.Draw(emptyTex, new Rectangle(numPlayers * 360, 300, 360, 360), Color.Black*.5f);
+                    spriteBatch.Draw(emptyTex, new Rectangle(numPlayerSelectionIndex * 480, 300, 480, 360), Color.Black*.5f);
                     break;
 
                 case GameState.Play:
                     spriteBatch.Draw(backgroundTexture, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
                     map.Draw(spriteBatch);
-                    temp.Draw(spriteBatch);
+                    players.ForEach(player => player.Draw(spriteBatch));
                     break;
 
                 case GameState.PauseMenu:
                     spriteBatch.Draw(backgroundTexture, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
                     map.Draw(spriteBatch);
-                    temp.Draw(spriteBatch);
+                    players.ForEach(player => player.Draw(spriteBatch));
                     spriteBatch.Draw(emptyTex, GraphicsDevice.Viewport.Bounds, Color.Black * 0.65f);
                     spriteBatch.DrawString(largeFont, "Paused", new Vector2(535, 400), Color.White);
                     spriteBatch.DrawString(medFont, "Press start to resume", new Vector2(420, 540), Color.White);
