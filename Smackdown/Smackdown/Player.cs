@@ -59,7 +59,6 @@ namespace Smackdown
             }
         }
 
-        
 
         public Player(): this(new Vector2(), null, PlayerIndex.One, null, null)
         {
@@ -234,6 +233,7 @@ namespace Smackdown
             {
                 position.Y = 0 - localBounds.Height + 60;
             }
+
             //if (position.X > map.rows * Tile.TILE_SIZE)
             //{
             //    position.X = 0 - localBounds.Width + 60;
