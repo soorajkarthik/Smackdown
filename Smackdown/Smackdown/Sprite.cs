@@ -5,17 +5,18 @@ namespace Smackdown
 {
     class Sprite
     {
-        public Texture2D SpriteSheet { get; set; }
         public int FrameWidth;
         public int FrameHeight;
-        private int framesPerRow;
+        private int FramesPerRow;
+
+        public Texture2D SpriteSheet { get; set; }
         public Dictionary<string, Animation> SpriteAnimations;
 
-        public Sprite(int _frameWidth, int _frameHeight, int _framesPerRow)
+        public Sprite(int width, int height, int framesPerRow)
         {
-            FrameWidth = _frameWidth;
-            FrameHeight = _frameHeight;
-            framesPerRow = _framesPerRow;
+            FrameWidth = width;
+            FrameHeight = height;
+            FramesPerRow = framesPerRow;
             SpriteSheet = null;
             SpriteAnimations = new Dictionary<string, Animation>();
         }
@@ -24,11 +25,11 @@ namespace Smackdown
         {
             get { return new Vector2(FrameWidth / 2.0f, FrameHeight / 2.0f); }
         }
-        public Rectangle GetFrameRectangle(int _frameNumber)
+        public Rectangle GetFrameRectangle(int frameNumber)
         {
             return new Rectangle(
-            (_frameNumber % framesPerRow) * FrameWidth,
-            (_frameNumber / framesPerRow) * FrameHeight,
+            (frameNumber % FramesPerRow) * FrameWidth,
+            (frameNumber / FramesPerRow) * FrameHeight,
             FrameWidth,
             FrameHeight);
         }

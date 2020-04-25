@@ -27,24 +27,26 @@ namespace Smackdown
             Settings
         }
 
-        GameState gameState;
-        Player temp;
-        int numPlayers;
-        Map map;
+        private GameState gameState;
+        private GamePadState oldp1gps;
+        private Player temp;
+        private int numPlayers;
+        private Map map;
 
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        private GraphicsDeviceManager graphics;
+        private SpriteBatch spriteBatch;
 
-        SpriteFont largeFont;
-        SpriteFont medFont;
-        SpriteFont smallFont;
+        private SpriteFont largeFont;
+        private SpriteFont medFont;
+        private SpriteFont smallFont;
 
-        Texture2D emptyTex;
-        Texture2D backgroundTexture;
+        private Texture2D emptyTex;
+        private Texture2D mainMenuTex;
+        private Texture2D backgroundTexture;
 
-        SoundEffect maintheme;
-        SoundEffect battle1;
-        SoundEffect battle2;
+        private SoundEffect maintheme;
+        private SoundEffect battle1;
+        private SoundEffect battle2;
 
         public Game1()
         {
@@ -66,10 +68,10 @@ namespace Smackdown
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            gameState = GameState.Play;
+            gameState = GameState.MainMenu;
 
             map = new Map(30, 20);
-            numPlayers = 1; //GET THIS FROM START SCREEN
+            numPlayers = 0; 
             map.loadMap(@"Content/maps/testmap2.txt");
             
             base.Initialize();
@@ -94,6 +96,7 @@ namespace Smackdown
             backgroundTexture = Content.Load<Texture2D>("tiles/background1");
             map.spriteSheet = Content.Load<Texture2D>("tiles/tileset");
             emptyTex = Content.Load<Texture2D>("tiles/empty");
+            mainMenuTex = Content.Load<Texture2D>("tiles/empty"); //CHANGE THIS
 
             maintheme = Content.Load<SoundEffect>("music/Smackdown Main Theme");
             battle2 = Content.Load<SoundEffect>("music/Smackdown_Battle_Theme_02");
@@ -124,29 +127,44 @@ namespace Smackdown
         protected override void Update(GameTime gameTime)
         {
             //Allows the game to exit
-            GamePadState p1 = GamePad.GetState(PlayerIndex.One);
-            if (p1.IsButtonDown(Buttons.LeftShoulder) && p1.IsButtonDown(Buttons.RightShoulder))
+            GamePadState p1gps = GamePad.GetState(PlayerIndex.One);
+            if (p1gps.IsButtonDown(Buttons.LeftShoulder) && p1gps.IsButtonDown(Buttons.RightShoulder))
                 this.Exit();
             
             switch(gameState)
             {
+                case GameState.MainMenu:
+                    if (p1gps.IsButtonDown(Buttons.LeftThumbstickRight) && !oldp1gps.IsButtonDown(Buttons.LeftThumbstickRight)) 
+                        numPlayers++;
+                    else if (p1gps.IsButtonDown(Buttons.LeftThumbstickLeft) && !oldp1gps.IsButtonDown(Buttons.LeftThumbstickLeft))
+                        numPlayers+=3;
+                    if(p1gps.IsButtonDown(Buttons.Start))
+                    {
+                        gameState = GameState.Play;
+                    }
+                    numPlayers %= 4;
+                    break;
+
                 case GameState.Play:
                     temp.Update(gameTime);
                     for (int i = 0; i < numPlayers; i++)
                         if (GamePad.GetState((PlayerIndex)i).IsButtonDown(Buttons.Back))
                             gameState = GameState.PauseMenu;
                     break;
+
                 case GameState.PauseMenu:
                     for(int i = 0; i < numPlayers; i++)
                         if (GamePad.GetState((PlayerIndex)i).IsButtonDown(Buttons.Start))
                             gameState = GameState.Play;
                     break;
+
                 default:
                     break;
             }
-            
+
             // TODO: Add your update logic here
-            
+
+            oldp1gps = p1gps;
             base.Update(gameTime);
         }
 
@@ -156,12 +174,15 @@ namespace Smackdown
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.White);
 
             spriteBatch.Begin();
 
             switch (gameState)
             {
+                case GameState.MainMenu:
+                    spriteBatch.Draw(emptyTex, new Rectangle(numPlayers * 360, 300, 360, 360), Color.Black*.5f);
+                    break;
 
                 case GameState.Play:
                     spriteBatch.Draw(backgroundTexture, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);

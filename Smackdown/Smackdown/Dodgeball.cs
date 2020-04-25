@@ -15,22 +15,21 @@ namespace Smackdown
 {
     class Dodgeball
     {
-        private double x, y;
-        public Rectangle rect;
-        public Vector2 velocity;
-        float gravityAcceleration;
-        float MaxFallSpeed;
-        bool isOnGround;
-        Vector2 position;
+        public Map map;
+        private bool isOnGround;
         private float previousBottom;
-        Map map;
-        Rectangle localBounds;
 
-        //multipliers for throw. indicates how fast the ball will go in a vector when thrown, per second
-        float xMultiplier = 50f;
-        float yMultiplier = 5000f;
+        private readonly float xMultiplier = 50f;
+        private readonly float yMultiplier = 5000f;
+        private readonly float gravityAcceleration = 50f;
+        private readonly float MaxFallSpeed = 300f;
         
         private static Texture2D texture;
+
+        private Rectangle rect;
+        private Rectangle localBounds;
+        private Vector2 velocity;
+        private Vector2 position;
 
         private Rectangle bounds
         {
@@ -51,26 +50,22 @@ namespace Smackdown
             }
         }
 
-        public Dodgeball()
+        public Dodgeball(): this(new Rectangle(), new Vector2(), new Map(), null)
         {
 
         }
 
         public Dodgeball(Rectangle r, Vector2 vel, Map m, Texture2D img)
         {
-            MaxFallSpeed = 300f;
             rect = new Rectangle(r.X, r.Y, 40, 40);
-            x = rect.X;
-            y = rect.Y;
             velocity = vel;
-            gravityAcceleration = +50f;
-            position = new Vector2((float)x, (float)y);
+            position = new Vector2((float)rect.X, (float)rect.Y);
             texture = img;
             map = m;
 
-            int width = img.Width - 4;
+            int width = img.Width;
             int left = (img.Width - width) / 2;
-            int height = img.Height - 4;
+            int height = img.Height;
             int top = img.Height - height;
 
             localBounds = new Rectangle(left, top, width, height);
@@ -81,7 +76,6 @@ namespace Smackdown
         {
 
             velocity.X = throwVector.X * xMultiplier;
-            
             velocity.Y = -throwVector.Y * yMultiplier;
             Console.Write(velocity.X + " ");
             Console.WriteLine(velocity.Y);
@@ -103,9 +97,6 @@ namespace Smackdown
             position += velocity * elapsed;
             position = new Vector2((float)Math.Round(position.X), (float)Math.Round(position.Y));
 
-            
-
-
             HandleCollisions();
 
             if (position.X == previousPosition.X)
@@ -116,7 +107,7 @@ namespace Smackdown
 
             if (position.Y > map.cols * Tile.TILE_SIZE)
             {
-                position.Y = 0 - localBounds.Height + 60;
+                position.Y = 0 - localBounds.Height + 40;
             }
 
             rect.X = (int)position.X;
@@ -183,7 +174,7 @@ namespace Smackdown
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, rect, Color.White);
+            spriteBatch.Draw(texture, bounds, Color.White);
         }    
     }
 }

@@ -13,20 +13,20 @@ namespace Smackdown
 {
     class Player: Sprite
     {
-        public Vector2 position;
-        private SpriteEffects flip;
         private string currentAnim = "Idle";
-        public Vector2 velocity;
-        public bool isAlive;
+        private SpriteEffects flip;
+        private Texture2D ballTex;
         public bool DeadAnimationEnded;
-        public bool isOnGround;       
+
+        public bool isAlive;       
+        public bool isOnGround;
         private bool isJumping;
+
         private bool wasJumping;
         private float jumpTime;
         private float previousBottom;
 
-        GamePadState gps;
-
+        private GamePadState gps;
         public PlayerIndex playerIndex;
         public Map map;
 
@@ -40,15 +40,14 @@ namespace Smackdown
         private readonly float GravityAcceleration = 21000f;
         private readonly float MaxFallSpeed = 30000f;
         private readonly float JumpControlPower = 0.14f;
+        private readonly float MoveStickScale = 1.0f;
 
-        private const float MoveStickScale = 1.0f;
+        private List<Dodgeball> activeBalls = new List<Dodgeball>();
 
-        List<Dodgeball> activeBalls = new List<Dodgeball>();
-
-       
+        public Vector2 position;
+        public Vector2 velocity;
 
         private Rectangle localBounds;
-
         private Rectangle bounds
         {
             get
@@ -60,7 +59,7 @@ namespace Smackdown
             }
         }
 
-        Texture2D ballTex;
+        
 
         public Player(): this(new Vector2(), null, PlayerIndex.One, null, null)
         {
