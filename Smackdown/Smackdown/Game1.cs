@@ -97,7 +97,7 @@ namespace Smackdown
             backgroundTexture = Content.Load<Texture2D>("tiles/background1");
             map.spriteSheet = Content.Load<Texture2D>("tiles/tileset");
             emptyTex = Content.Load<Texture2D>("menus/empty");
-            mainMenuTex = Content.Load<Texture2D>("menus/empty"); //CHANGE THIS
+            mainMenuTex = Content.Load<Texture2D>("menus/playerSelection");
 
             maintheme = Content.Load<SoundEffect>("music/Smackdown Main Theme");
             battle2 = Content.Load<SoundEffect>("music/Smackdown_Battle_Theme_02");
@@ -195,7 +195,10 @@ namespace Smackdown
             switch (gameState)
             {
                 case GameState.MainMenu:
-                    spriteBatch.Draw(emptyTex, new Rectangle(numPlayerSelectionIndex * 480, 300, 480, 360), Color.Black*.5f);
+                    spriteBatch.Draw(mainMenuTex, GraphicsDevice.Viewport.Bounds, Color.White);
+                    spriteBatch.Draw(emptyTex, new Rectangle(numPlayerSelectionIndex * 480, 300, 480, 360), Color.SteelBlue*.25f);
+                    spriteBatch.DrawString(medFont, "How Many Fighters?", new Vector2(465, 100), Color.Black);
+                    spriteBatch.DrawString(medFont, "Press start to confirm", new Vector2(400, 800), Color.Black);
                     break;
 
                 case GameState.Play:

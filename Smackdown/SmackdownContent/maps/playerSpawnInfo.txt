@@ -1,4 +1,4 @@
 100 100 sprites/players/blueknight sprites/balls/dodgeball
 1300 150 sprites/players/greenknight sprites/balls/dodgeball
-100 820 sprites/players/redknight sprites/balls/dodgeball
-1300 820 sprites/players/yellowknight sprites/balls/dodgeball
+100 820 sprites/players/yellowknight sprites/balls/dodgeball
+1300 820 sprites/players/redknight sprites/balls/dodgeball
