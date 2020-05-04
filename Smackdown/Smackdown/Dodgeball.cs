@@ -18,9 +18,9 @@ namespace Smackdown
         public Map map;
         private bool isOnGround;
         private float previousBottom;
-
-        private readonly float xMultiplier = 50f;
-        private readonly float yMultiplier = 5000f;
+        int lifeCounter;
+        private readonly float xMultiplier = 30f;
+        private readonly float yMultiplier = 4000f;
         private readonly float gravityAcceleration = 50f;
         private readonly float MaxFallSpeed = 300f;
         
@@ -57,6 +57,7 @@ namespace Smackdown
 
         public Dodgeball(Rectangle r, Vector2 vel, Map m, Texture2D img)
         {
+            lifeCounter = 0;
             rect = new Rectangle(r.X, r.Y, 40, 40);
             velocity = vel;
             position = new Vector2((float)rect.X, (float)rect.Y);
@@ -128,7 +129,18 @@ namespace Smackdown
             {
                 for (int x = leftTile; x <= rightTile; ++x)
                 {
+                    
                     Tile.CollisionType collision = map.getCollisionAtCoordinates(x, y);
+                    
+                    if (y == topTile + 1 && x == leftTile + 1)
+                    {
+                        //Console.WriteLine("bounce");
+                        if (collision == Tile.CollisionType.Impassable)
+                        {
+                            
+                            velocity.Y = -Math.Abs(velocity.Y) * 1f;
+                        }
+                    }
                     if (collision != Tile.CollisionType.Passable)
                     {
                         Rectangle tileBounds = map.getTileBounds(x, y);
@@ -147,11 +159,27 @@ namespace Smackdown
                                 if (collision == Tile.CollisionType.Impassable || isOnGround)
                                 {
                                     position = new Vector2(position.X, position.Y + depth.Y);
+                                    position = new Vector2(position.X + depth.X / 2, position.Y);
+                                    if (velocity.X > 0)
+                                    {
+                                        velocity.X = -Math.Abs(velocity.X) * 0.5f;
+                                    }
+                                    else if (velocity.X < 0)
+                                    {
+                                        velocity.X = Math.Abs(velocity.X) * 0.5f;
+                                    }
                                 }
                             }
                             else if (collision == Tile.CollisionType.Impassable)
                             {
                                 position = new Vector2(position.X + depth.X / 2, position.Y);
+                                if (velocity.X > 0)
+                                {
+                                    velocity.X = -Math.Abs(velocity.X) * 0.5f;
+                                } else if (velocity.X < 0)
+                                {
+                                    velocity.X = Math.Abs(velocity.X) * 0.5f;
+                                }
                             }
                         }
                     }

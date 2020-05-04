@@ -198,6 +198,13 @@ namespace Smackdown
                 SpriteAnimations[currentAnim].ResetPlay();
             }
 
+            if (!isAlive)
+            {
+                SpriteAnimations[currentAnim].Stop();
+                currentAnim = "Dead";
+                SpriteAnimations[currentAnim].ResetPlay();
+            }
+
             return horizMovement;
         }
 
