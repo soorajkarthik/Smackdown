@@ -39,6 +39,7 @@ namespace Smackdown
 
         private SpriteFont largeFont;
         private SpriteFont medFont;
+        private SpriteFont medFont2;
         private SpriteFont smallFont;
 
         private Texture2D emptyTex;
@@ -94,13 +95,14 @@ namespace Smackdown
 
             largeFont = Content.Load<SpriteFont>("fonts/SpriteFont1");
             medFont = Content.Load<SpriteFont>("fonts/SpriteFont2");
-            smallFont = Content.Load<SpriteFont>("fonts/SpriteFont3");
+            medFont2 = Content.Load<SpriteFont>("fonts/SpriteFont3");
+            smallFont = Content.Load<SpriteFont>("fonts/SpriteFont4");
 
             backgroundTex = Content.Load<Texture2D>("tiles/background1");
             map.spriteSheet = Content.Load<Texture2D>("tiles/tileset");
             emptyTex = Content.Load<Texture2D>("menus/empty");
             mainMenuTex = Content.Load<Texture2D>("menus/mainMenu");
-            //controlScreenTex = Content.Load<Texture2D>("menus/controls");
+            controlScreenTex = Content.Load<Texture2D>("menus/controls");
             playerSelectionTex = Content.Load<Texture2D>("menus/playerSelection");
 
             maintheme = Content.Load<SoundEffect>("music/Smackdown Main Theme");
@@ -252,6 +254,8 @@ namespace Smackdown
 
                 case GameState.Controls:
                     spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
+                    spriteBatch.Draw(controlScreenTex, GraphicsDevice.Viewport.Bounds, Color.White);
+                    spriteBatch.DrawString(medFont2, "Controls", new Vector2(530, 100), Color.SlateGray);
                     break;
 
                 case GameState.PlayerSelection:
