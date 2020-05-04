@@ -188,7 +188,7 @@ namespace Smackdown
                 case GameState.Play:
                     players.ForEach(player => player.Update(gameTime));
                     for (int i = 0; i < players.Count; i++)
-                        if (GamePad.GetState((PlayerIndex)i).IsButtonDown(Buttons.Back))
+                        if (GamePad.GetState((PlayerIndex)i).IsButtonDown(Buttons.Start))
                             gameState = GameState.PauseMenu;
                     break;
 
@@ -197,7 +197,7 @@ namespace Smackdown
                     {
                         GamePadState gps = GamePad.GetState((PlayerIndex)i);
 
-                        if (gps.IsButtonDown(Buttons.Start))
+                        if (gps.IsButtonDown(Buttons.Back))
                             gameState = GameState.Play;
                         else if (gps.IsButtonDown(Buttons.LeftShoulder) && gps.IsButtonDown(Buttons.RightShoulder))
                             gameState = GameState.MainMenu;
@@ -278,7 +278,7 @@ namespace Smackdown
                     players.ForEach(player => player.Draw(spriteBatch));
                     spriteBatch.Draw(emptyTex, GraphicsDevice.Viewport.Bounds, Color.Black * 0.65f);
                     spriteBatch.DrawString(largeFont, "Paused", new Vector2(535, 300), Color.SlateGray);
-                    spriteBatch.DrawString(medFont, "Press start to resume", new Vector2(420, 440), Color.SlateGray);
+                    spriteBatch.DrawString(medFont, "Press back to resume", new Vector2(435, 440), Color.SlateGray);
                     spriteBatch.DrawString(medFont, "Press LB and RB to quit", new Vector2(420, 520), Color.SlateGray);
                     break;
             }
