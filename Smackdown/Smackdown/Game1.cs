@@ -20,7 +20,7 @@ namespace Smackdown
         enum GameState
         {
             MainMenu,
-            LevelSelection,
+            PlayerSelection,
             Play,
             PauseMenu,
             GameOver,
@@ -31,7 +31,7 @@ namespace Smackdown
         private GameState gameState;
         private GamePadState oldp1gps;
         private List<Player> players;
-        private int numPlayerSelectionIndex;
+        private int highlightIndex;
         private Map map;
 
         private GraphicsDeviceManager graphics;
@@ -43,7 +43,9 @@ namespace Smackdown
 
         private Texture2D emptyTex;
         private Texture2D mainMenuTex;
-        private Texture2D backgroundTexture;
+        private Texture2D playerSelectionTex;
+        private Texture2D controlScreenTex;
+        private Texture2D backgroundTex;
 
         private SoundEffect maintheme;
         private SoundEffect battle1;
@@ -70,7 +72,7 @@ namespace Smackdown
         {
             // TODO: Add your initialization logic here
             gameState = GameState.MainMenu;
-            numPlayerSelectionIndex = 0;
+            highlightIndex = 0;
 
             map = new Map(30, 20);
             map.loadMap(@"Content/maps/testmap2.txt");
@@ -94,10 +96,12 @@ namespace Smackdown
             medFont = Content.Load<SpriteFont>("fonts/SpriteFont2");
             smallFont = Content.Load<SpriteFont>("fonts/SpriteFont3");
 
-            backgroundTexture = Content.Load<Texture2D>("tiles/background1");
+            backgroundTex = Content.Load<Texture2D>("tiles/background1");
             map.spriteSheet = Content.Load<Texture2D>("tiles/tileset");
             emptyTex = Content.Load<Texture2D>("menus/empty");
-            mainMenuTex = Content.Load<Texture2D>("menus/playerSelection");
+            mainMenuTex = Content.Load<Texture2D>("menus/mainMenu");
+            //controlScreenTex = Content.Load<Texture2D>("menus/controls");
+            playerSelectionTex = Content.Load<Texture2D>("menus/playerSelection");
 
             maintheme = Content.Load<SoundEffect>("music/Smackdown Main Theme");
             battle2 = Content.Load<SoundEffect>("music/Smackdown_Battle_Theme_02");
@@ -125,35 +129,78 @@ namespace Smackdown
         {
             //Allows the game to exit
             GamePadState p1gps = GamePad.GetState(PlayerIndex.One);
-            if (p1gps.IsButtonDown(Buttons.LeftShoulder) && p1gps.IsButtonDown(Buttons.RightShoulder))
-                this.Exit();
-            
-            switch(gameState)
+
+            switch (gameState)
             {
                 case GameState.MainMenu:
-                    if (p1gps.IsButtonDown(Buttons.LeftThumbstickRight) && !oldp1gps.IsButtonDown(Buttons.LeftThumbstickRight))
-                        numPlayerSelectionIndex++;
-                    else if (p1gps.IsButtonDown(Buttons.LeftThumbstickLeft) && !oldp1gps.IsButtonDown(Buttons.LeftThumbstickLeft))
-                        numPlayerSelectionIndex += 2;
-                    numPlayerSelectionIndex %= 3;
-                    if (p1gps.IsButtonDown(Buttons.Start))
+                    if (p1gps.IsButtonDown(Buttons.A))
                     {
-                        spawnPlayers(numPlayerSelectionIndex + 2); //accounting for the fact that we're using index for highlighting box                                            
+                        switch (highlightIndex)
+                        {
+                            case 0:
+                                gameState = GameState.PlayerSelection;
+                                break;
+                            case 1:
+                                gameState = GameState.Controls;
+                                break;
+                            case 2:
+                                this.Exit();
+                                break;
+                        }
+                    }
+
+                    else if (p1gps.IsButtonDown(Buttons.LeftThumbstickDown) && !oldp1gps.IsButtonDown(Buttons.LeftThumbstickDown))
+                        highlightIndex++;
+                    else if (p1gps.IsButtonDown(Buttons.LeftThumbstickUp) && !oldp1gps.IsButtonDown(Buttons.LeftThumbstickUp))
+                        highlightIndex += 2;
+
+                    highlightIndex %= 3;
+                    break;
+
+                case GameState.Controls:
+                    if (p1gps.IsButtonDown(Buttons.Back))
+                        gameState = GameState.MainMenu;
+                    break;
+
+                case GameState.PlayerSelection:
+
+                    if (p1gps.IsButtonDown(Buttons.A) && !oldp1gps.IsButtonDown(Buttons.A))
+                    {
+                        spawnPlayers(highlightIndex + 2); //accounting for the fact that we're using index for highlighting box         
+                        highlightIndex = 0;
                         gameState = GameState.Play;
                     }
+                    else if (p1gps.IsButtonDown(Buttons.Back))
+                    {
+                        highlightIndex = 0;
+                        gameState = GameState.MainMenu;
+                    }
+                    else if (p1gps.IsButtonDown(Buttons.LeftThumbstickRight) && !oldp1gps.IsButtonDown(Buttons.LeftThumbstickRight))
+                        highlightIndex++;
+                    else if (p1gps.IsButtonDown(Buttons.LeftThumbstickLeft) && !oldp1gps.IsButtonDown(Buttons.LeftThumbstickLeft))
+                        highlightIndex += 2;
+
+                    highlightIndex %= 3;
                     break;
 
                 case GameState.Play:
                     players.ForEach(player => player.Update(gameTime));
-                    for (int i = 0; i < numPlayerSelectionIndex; i++)
+                    for (int i = 0; i < players.Count; i++)
                         if (GamePad.GetState((PlayerIndex)i).IsButtonDown(Buttons.Back))
                             gameState = GameState.PauseMenu;
                     break;
 
                 case GameState.PauseMenu:
-                    for(int i = 0; i < numPlayerSelectionIndex; i++)
-                        if (GamePad.GetState((PlayerIndex)i).IsButtonDown(Buttons.Start))
+                    for(int i = 0; i < players.Count; i++)
+                    {
+                        GamePadState gps = GamePad.GetState((PlayerIndex)i);
+
+                        if (gps.IsButtonDown(Buttons.Start))
                             gameState = GameState.Play;
+                        else if (gps.IsButtonDown(Buttons.LeftShoulder) && gps.IsButtonDown(Buttons.RightShoulder))
+                            gameState = GameState.MainMenu;
+                    }
+                        
                     break;
 
                 default:
@@ -195,25 +242,40 @@ namespace Smackdown
             switch (gameState)
             {
                 case GameState.MainMenu:
+                    spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
                     spriteBatch.Draw(mainMenuTex, GraphicsDevice.Viewport.Bounds, Color.White);
-                    spriteBatch.Draw(emptyTex, new Rectangle(numPlayerSelectionIndex * 480, 300, 480, 360), Color.SteelBlue*.25f);
-                    spriteBatch.DrawString(medFont, "How Many Fighters?", new Vector2(465, 100), Color.Black);
-                    spriteBatch.DrawString(medFont, "Press start to confirm", new Vector2(400, 800), Color.Black);
+                    spriteBatch.DrawString(medFont, "Play", new Vector2(320, 310), Color.Black);
+                    spriteBatch.DrawString(medFont, "Controls", new Vector2(253, 460), Color.Black);
+                    spriteBatch.DrawString(medFont, "Quit", new Vector2(320, 610), Color.Black);
+                    spriteBatch.Draw(emptyTex, new Rectangle(200, (150*highlightIndex) + 255, 360, 150), Color.DarkBlue * .35f);
+                    break;
+
+                case GameState.Controls:
+                    spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
+                    break;
+
+                case GameState.PlayerSelection:
+                    spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
+                    spriteBatch.Draw(playerSelectionTex, GraphicsDevice.Viewport.Bounds, Color.White);
+                    spriteBatch.Draw(emptyTex, new Rectangle(highlightIndex * 480, 300, 480, 360), Color.DarkBlue * .35f);
+                    spriteBatch.DrawString(medFont, "How Many Fighters?", new Vector2(465, 100), Color.SlateGray);
+                    spriteBatch.DrawString(medFont, "A to confirm, Back to return to Main Menu", new Vector2(180, 800), Color.SlateGray);
                     break;
 
                 case GameState.Play:
-                    spriteBatch.Draw(backgroundTexture, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
+                    spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
                     map.Draw(spriteBatch);
                     players.ForEach(player => player.Draw(spriteBatch));
                     break;
 
                 case GameState.PauseMenu:
-                    spriteBatch.Draw(backgroundTexture, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
+                    spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
                     map.Draw(spriteBatch);
                     players.ForEach(player => player.Draw(spriteBatch));
                     spriteBatch.Draw(emptyTex, GraphicsDevice.Viewport.Bounds, Color.Black * 0.65f);
-                    spriteBatch.DrawString(largeFont, "Paused", new Vector2(535, 400), Color.White);
-                    spriteBatch.DrawString(medFont, "Press start to resume", new Vector2(420, 540), Color.White);
+                    spriteBatch.DrawString(largeFont, "Paused", new Vector2(535, 300), Color.SlateGray);
+                    spriteBatch.DrawString(medFont, "Press start to resume", new Vector2(420, 440), Color.SlateGray);
+                    spriteBatch.DrawString(medFont, "Press LB and RB to quit", new Vector2(420, 520), Color.SlateGray);
                     break;
             }
 
