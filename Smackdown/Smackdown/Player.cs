@@ -136,6 +136,24 @@ namespace Smackdown
                 isJumping = false;
             }
 
+            else if(!DeadAnimationEnded)
+            {
+                if(isOnGround && currentAnim != "Dead")
+                {
+                    SpriteAnimations[currentAnim].Stop();
+                    currentAnim = "Dead";
+                    SpriteAnimations[currentAnim].ResetPlay();
+                }
+                else
+                {
+                    HandlePhysics(gameTime, 0f);
+                    velocity = new Vector2(0, 0);
+                    isJumping = false;
+                }
+            }
+                
+            
+
             SpriteAnimations[currentAnim].Update(gameTime);
 
             //updates player's balls
@@ -199,14 +217,7 @@ namespace Smackdown
                 currentAnim = "Idle";
                 SpriteAnimations[currentAnim].ResetPlay();
             }
-
-            if (!isAlive)
-            {
-                SpriteAnimations[currentAnim].Stop();
-                currentAnim = "Dead";
-                SpriteAnimations[currentAnim].ResetPlay();
-            }
-
+            
             return horizMovement;
         }
 
@@ -305,6 +316,7 @@ namespace Smackdown
                 for (int x = leftTile; x <= rightTile; ++x)
                 {
                     Tile.CollisionType collision = map.getCollisionAtCoordinates(x, y);
+
                     if (collision != Tile.CollisionType.Passable)
                     {
                         Rectangle tileBounds = map.getTileBounds(x, y);
@@ -315,36 +327,45 @@ namespace Smackdown
                             float absDepthX = Math.Abs(depth.X);
                             float absDepthY = Math.Abs(depth.Y);
 
+
                             if (absDepthY < absDepthX || collision == Tile.CollisionType.Platform)
                             {
-                                if (previousBottom <= tileBounds.Top)
+
+                                if (previousBottom <= tileBounds.Top && collision != Tile.CollisionType.Spikes)
                                     isOnGround = true;
 
                                 if (collision == Tile.CollisionType.Impassable || isOnGround)
                                 {
                                     position = new Vector2(position.X, position.Y + depth.Y);
                                 }
+
                             }
+
+                            else if (collision == Tile.CollisionType.Spikes && absDepthX >= 30 && absDepthY >= 30)
+                                isAlive = false;
+
                             else if (collision == Tile.CollisionType.Impassable)
                             {
-                                position = new Vector2(position.X + depth.X/2, position.Y);
+                                position = new Vector2(position.X + depth.X / 2, position.Y);
                             }
+                            
                         }
                     }
                 }
             }
             previousBottom = bounds.Bottom;
         }
-
-
+     
         public void Draw(SpriteBatch spriteBatch)
         {
-            Rectangle source = GetFrameRectangle(SpriteAnimations[currentAnim].FrameToDraw);        
+            if (!DeadAnimationEnded)
+            {
+                Rectangle source = GetFrameRectangle(SpriteAnimations[currentAnim].FrameToDraw);
+                spriteBatch.Draw(SpriteSheet, position, source, Color.White, 0.0f, Origin, 1.0f, flip, 0.0f);
+            }
 
-            spriteBatch.Draw(SpriteSheet, position, source, Color.White, 0.0f, Origin, 1.0f, flip, 0.0f);
             for(int i = 0; i < activeBalls.Count; i++)
             {
-                
                 activeBalls[i].Draw(spriteBatch);
             }
         }

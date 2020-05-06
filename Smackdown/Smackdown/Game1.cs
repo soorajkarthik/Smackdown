@@ -196,7 +196,7 @@ namespace Smackdown
                             MediaPlayer.Play(battleThemes[currentSong]);
                         }
                     }
-                    else if (p1gps.IsButtonDown(Buttons.Back) || p1gps.IsButtonDown(Buttons.B))
+                    else if (p1gps.IsButtonDown(Buttons.B))
                     {
                         highlightIndex = 0;
                         gameState = GameState.MainMenu;
@@ -335,7 +335,7 @@ namespace Smackdown
                     spriteBatch.Draw(playerSelectionTex, GraphicsDevice.Viewport.Bounds, Color.White);
                     spriteBatch.Draw(emptyTex, new Rectangle(highlightIndex * 480, 300, 480, 360), Color.DarkBlue * .35f);
                     spriteBatch.DrawString(medFont, "How Many Fighters?", new Vector2(465, 100), Color.SlateGray);
-                    spriteBatch.DrawString(medFont, "A to confirm, Back or B to return to Main Menu", new Vector2(180, 800), Color.SlateGray);
+                    spriteBatch.DrawString(medFont, "A to confirm, B to return to Main Menu", new Vector2(210, 800), Color.SlateGray);
                     break;
 
                 case GameState.Play:
