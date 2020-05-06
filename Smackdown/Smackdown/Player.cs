@@ -17,6 +17,7 @@ namespace Smackdown
         private SpriteEffects flip;
         private Texture2D ballTex;
         public bool DeadAnimationEnded;
+        public int balls;
 
         public bool isAlive;       
         public bool isOnGround;
@@ -67,6 +68,7 @@ namespace Smackdown
 
         public Player(Vector2 pos, Texture2D img, PlayerIndex playerIndex, Map m, Texture2D ballT): base(96, 96, 6)
         {
+            balls = 3;
             this.position = pos;
             SpriteSheet = img;
             this.velocity = new Vector2(0, 0);
@@ -294,11 +296,15 @@ namespace Smackdown
 
         private void throwBall(Vector2 throwVector)
         {
-            //later switch texture by ball type
-            activeBalls.Add(new Dodgeball(new Rectangle((int) position.X, (int) position.Y - 20, 40, 40), throwVector, map, ballTex));
-            if (activeBalls.Count > 0)
+            if (balls > 0)
             {
-                activeBalls[activeBalls.Count - 1].throwBall(throwVector);
+                //later switch texture by ball type
+                activeBalls.Add(new Dodgeball(new Rectangle((int)position.X, (int)position.Y - 20, 40, 40), throwVector, map, ballTex));
+                if (activeBalls.Count > 0)
+                {
+                    activeBalls[activeBalls.Count - 1].throwBall(throwVector);
+                }
+                balls--;
             }
         }
 
@@ -362,6 +368,7 @@ namespace Smackdown
             {
                 Rectangle source = GetFrameRectangle(SpriteAnimations[currentAnim].FrameToDraw);
                 spriteBatch.Draw(SpriteSheet, position, source, Color.White, 0.0f, Origin, 1.0f, flip, 0.0f);
+
             }
 
             for(int i = 0; i < activeBalls.Count; i++)

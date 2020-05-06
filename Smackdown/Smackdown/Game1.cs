@@ -339,13 +339,27 @@ namespace Smackdown
                 case GameState.Play:
                     spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
                     map.Draw(spriteBatch);
+                    for (int i = 0; i < players.Count; i++)
+                    {
+                        if (players[i].isAlive)
+                        {
+                            String ballStr = "";
+                            for(int j = 0; j < players[i].balls; j++)
+                            {
+                                ballStr += "1 ";
+                            }
+                            spriteBatch.DrawString(smallFont, "" + ballStr + "", new Vector2(players[i].position.X - 10, players[i].position.Y - 50), Color.Yellow);
+                        }
+                    }
                     players.ForEach(player => player.Draw(spriteBatch));
+                    
                     break;
 
                 case GameState.PauseMenu:
                     spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
                     map.Draw(spriteBatch);
                     players.ForEach(player => player.Draw(spriteBatch));
+                    
                     spriteBatch.Draw(emptyTex, GraphicsDevice.Viewport.Bounds, Color.Black * 0.65f);
                     spriteBatch.DrawString(largeFont, "Paused", new Vector2(535, 300), Color.SlateGray);
                     spriteBatch.DrawString(medFont, "Press back to resume", new Vector2(435, 440), Color.SlateGray);
