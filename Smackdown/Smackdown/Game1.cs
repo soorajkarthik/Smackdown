@@ -147,6 +147,7 @@ namespace Smackdown
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            
             //Allows the game to exit
             GamePadState p1gps = GamePad.GetState(PlayerIndex.One);
             
@@ -233,7 +234,10 @@ namespace Smackdown
                         }
                     }
 
+
+
                     players.ForEach(player => player.Update(gameTime));
+                    
                     for (int i = 0; i < players.Count; i++)
                     {
                         if (GamePad.GetState((PlayerIndex)i).IsButtonDown(Buttons.Start))
@@ -245,8 +249,23 @@ namespace Smackdown
                                 pause.Play();
                             }
                         }
+
+
+                        for (int k = 0; k < players.Count; k++)
+                        {
+                            for(int j = 0; j < players[k].activeBalls.Count; j++)
+                            {
+                                if (players[i].gps.IsButtonDown(Buttons.B) && players[i].oldgps.IsButtonDown(Buttons.B) && getDistance(players[k].activeBalls[j].position, players[i].position) < 40)
+                                {
+                                    players[i].balls++;
+                                    players[k].activeBalls.RemoveAt(j);
+                                }
+                            }
+                            
+                        }
                     }
 
+                    
                     break;
 
                 case GameState.PauseMenu:
@@ -299,7 +318,10 @@ namespace Smackdown
             }
         }
 
-
+        private int getDistance(Vector2 one, Vector2 two)
+        {
+            return Math.Abs((int) Math.Sqrt(Math.Pow(two.X - one.X, 2) + Math.Pow(two.Y - one.Y, 2)));
+        }
 
         /// <summary>
         /// This is called when the game should draw itself.

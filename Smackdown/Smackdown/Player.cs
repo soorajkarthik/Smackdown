@@ -27,7 +27,8 @@ namespace Smackdown
         private float jumpTime;
         private float previousBottom;
 
-        private GamePadState gps;
+        public GamePadState gps;
+        public GamePadState oldgps;
         public PlayerIndex playerIndex;
         public Map map;
 
@@ -43,7 +44,7 @@ namespace Smackdown
         private readonly float JumpControlPower = 0.14f;
         private readonly float MoveStickScale = 1.0f;
 
-        private List<Dodgeball> activeBalls = new List<Dodgeball>();
+        public List<Dodgeball> activeBalls = new List<Dodgeball>();
 
         public Vector2 position;
         public Vector2 velocity;
@@ -79,7 +80,7 @@ namespace Smackdown
             map = m;
             ballTex = ballT;
             gps = GamePad.GetState(playerIndex);
-
+            oldgps = gps;
             currentAnim = "Idle";
 
             LoadAnimations();
@@ -154,7 +155,6 @@ namespace Smackdown
                 }
             }
                 
-            
 
             SpriteAnimations[currentAnim].Update(gameTime);
 
@@ -167,7 +167,7 @@ namespace Smackdown
 
         private float GetInput()
         {
-            GamePadState oldgps = gps;
+            oldgps = gps;
             gps = GamePad.GetState(playerIndex);
             float horizMovement = gps.ThumbSticks.Left.X * MoveStickScale;
             isJumping =
