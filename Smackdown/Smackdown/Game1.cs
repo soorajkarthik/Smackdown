@@ -47,10 +47,14 @@ namespace Smackdown
         private Texture2D playerSelectionTex;
         private Texture2D controlScreenTex;
         private Texture2D backgroundTex;
+        
+        private Song mainTheme;
+        private Song[] battleThemes;
+        private SoundEffect pause, unpause;
 
-        private SoundEffect maintheme;
-        private SoundEffect battle1;
-        private SoundEffect battle2;
+        private int currentSong; //for battle themes only
+        private long songTimeLeft; //for battle themes only
+        private long unpauseTimeLeft;
 
         public Game1()
         {
@@ -77,7 +81,10 @@ namespace Smackdown
 
             map = new Map(30, 20);
             map.loadMap(@"Content/maps/testmap2.txt");
-            
+
+            MediaPlayer.IsRepeating = true;
+            songTimeLeft = unpauseTimeLeft = currentSong = 0;
+
             base.Initialize();
             
         }
@@ -105,12 +112,18 @@ namespace Smackdown
             controlScreenTex = Content.Load<Texture2D>("menus/controls");
             playerSelectionTex = Content.Load<Texture2D>("menus/playerSelection");
 
-            maintheme = Content.Load<SoundEffect>("music/Smackdown Main Theme");
-            battle2 = Content.Load<SoundEffect>("music/Smackdown_Battle_Theme_02");
+            //music and sound effects
+            mainTheme = Content.Load<Song>("music/Smackdown Main Theme");
+            battleThemes = new Song[]
+            {
+                Content.Load<Song>("music/Smackdown_Battle_Theme_01"),
+                Content.Load<Song>("music/Smackdown_Battle_Theme_02")
+            };
 
-            //TEMP MUSIC
-            //battle2.Play();
+            pause = Content.Load<SoundEffect>("music/PauseButton");
+            unpause = Content.Load<SoundEffect>("music/UnpauseButton");
 
+            MediaPlayer.Play(mainTheme);
         }
 
         /// <summary>
@@ -131,7 +144,7 @@ namespace Smackdown
         {
             //Allows the game to exit
             GamePadState p1gps = GamePad.GetState(PlayerIndex.One);
-
+            
             switch (gameState)
             {
                 case GameState.MainMenu:
@@ -160,7 +173,7 @@ namespace Smackdown
                     break;
 
                 case GameState.Controls:
-                    if (p1gps.IsButtonDown(Buttons.Back))
+                    if (p1gps.IsButtonDown(Buttons.Back) || p1gps.IsButtonDown(Buttons.B))
                         gameState = GameState.MainMenu;
                     break;
 
@@ -171,8 +184,11 @@ namespace Smackdown
                         spawnPlayers(highlightIndex + 2); //accounting for the fact that we're using index for highlighting box         
                         highlightIndex = 0;
                         gameState = GameState.Play;
+                        
+                        songTimeLeft = battleThemes[currentSong].Duration.Ticks;
+                        MediaPlayer.Play(battleThemes[currentSong]);
                     }
-                    else if (p1gps.IsButtonDown(Buttons.Back))
+                    else if (p1gps.IsButtonDown(Buttons.Back) || p1gps.IsButtonDown(Buttons.B))
                     {
                         highlightIndex = 0;
                         gameState = GameState.MainMenu;
@@ -186,10 +202,39 @@ namespace Smackdown
                     break;
 
                 case GameState.Play:
+                    if (unpauseTimeLeft > 0)
+                    {
+                        unpauseTimeLeft -= 60;
+                        Console.WriteLine(unpauseTimeLeft);
+                        Console.WriteLine(TimeSpan.FromTicks(unpauseTimeLeft).TotalSeconds);
+                        if (unpauseTimeLeft <= 0)
+                        {
+                            MediaPlayer.Resume();
+                        }
+                    }
+                    else
+                    {
+                        songTimeLeft--;
+                        if (songTimeLeft == 0)
+                        {
+                            currentSong++;
+                            currentSong %= 2;
+                            songTimeLeft = battleThemes[currentSong].Duration.Ticks;
+                            MediaPlayer.Play(battleThemes[currentSong]);
+                        }
+                    }
+
                     players.ForEach(player => player.Update(gameTime));
                     for (int i = 0; i < players.Count; i++)
+                    {
                         if (GamePad.GetState((PlayerIndex)i).IsButtonDown(Buttons.Start))
+                        {
                             gameState = GameState.PauseMenu;
+                            MediaPlayer.Pause();
+                            pause.Play();
+                        }
+                    }
+
                     break;
 
                 case GameState.PauseMenu:
@@ -198,9 +243,16 @@ namespace Smackdown
                         GamePadState gps = GamePad.GetState((PlayerIndex)i);
 
                         if (gps.IsButtonDown(Buttons.Back))
+                        {
                             gameState = GameState.Play;
+                            unpause.Play();
+                            unpauseTimeLeft = unpause.Duration.Ticks;
+                        }
                         else if (gps.IsButtonDown(Buttons.LeftShoulder) && gps.IsButtonDown(Buttons.RightShoulder))
+                        {
                             gameState = GameState.MainMenu;
+                            MediaPlayer.Play(mainTheme);
+                        }
                     }
                         
                     break;
@@ -263,7 +315,7 @@ namespace Smackdown
                     spriteBatch.Draw(playerSelectionTex, GraphicsDevice.Viewport.Bounds, Color.White);
                     spriteBatch.Draw(emptyTex, new Rectangle(highlightIndex * 480, 300, 480, 360), Color.DarkBlue * .35f);
                     spriteBatch.DrawString(medFont, "How Many Fighters?", new Vector2(465, 100), Color.SlateGray);
-                    spriteBatch.DrawString(medFont, "A to confirm, Back to return to Main Menu", new Vector2(180, 800), Color.SlateGray);
+                    spriteBatch.DrawString(medFont, "A to confirm, Back or B to return to Main Menu", new Vector2(180, 800), Color.SlateGray);
                     break;
 
                 case GameState.Play:

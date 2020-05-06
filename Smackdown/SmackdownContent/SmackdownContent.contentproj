@@ -133,20 +133,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="music\Smackdown Main Theme.wav">
-      <Name>Smackdown Main Theme</Name>
-      <Importer>WavImporter</Importer>
-      <Processor>SoundEffectProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="music\Smackdown_Battle_Theme_02.wav">
-      <Name>Smackdown_Battle_Theme_02</Name>
-      <Importer>WavImporter</Importer>
-      <Processor>SoundEffectProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="menus\empty.png">
       <Name>empty</Name>
       <Importer>TextureImporter</Importer>
@@ -172,6 +158,41 @@
       <Name>controls</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="music\Smackdown_Battle_Theme_01.mp3">
+      <Name>Smackdown_Battle_Theme_01</Name>
+      <Importer>Mp3Importer</Importer>
+      <Processor>SongProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="music\Smackdown_Battle_Theme_02.mp3">
+      <Name>Smackdown_Battle_Theme_02</Name>
+      <Importer>Mp3Importer</Importer>
+      <Processor>SongProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="music\Smackdown Main Theme.mp3">
+      <Name>Smackdown Main Theme</Name>
+      <Importer>Mp3Importer</Importer>
+      <Processor>SongProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="music\PauseButton.wav">
+      <Name>PauseButton</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="music\UnpauseButton.wav">
+      <Name>UnpauseButton</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
