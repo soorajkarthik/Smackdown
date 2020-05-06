@@ -215,26 +215,30 @@ namespace Smackdown
                 case GameState.MapSelection:
                     if (p1gps.IsButtonDown(Buttons.A) && !oldp1gps.IsButtonDown(Buttons.A))
                     {
-                        map.loadMap(@"Content/maps/map" + (highlightIndex + 1) + ".txt");
-
-                        
-                        gameState = GameState.Play;
-                        switch (highlightIndex + 1)
+                        try
                         {
-                            case 1:
-                                map.spriteSheet = tileset1;
-                                break;
-                            case 2:
-                                map.spriteSheet = tileset2;
-                                break;
-                            case 3:
-                                map.spriteSheet = tileset3;
-                                break;
-                            default:
-                                Console.WriteLine("Error Loading Tiles: Specified Tile sheet for map " + (highlightIndex + 1) + " not found.");
-                                map.spriteSheet = tileset1;
-                                break;
+                            map.loadMap(@"Content/maps/map" + (highlightIndex + 1) + ".txt");
                         }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                            Console.WriteLine("Error Loading Map: Map " + (highlightIndex + 1) + " not found.");
+                            map.loadMap(@"Content/maps/map1.txt");
+                        }
+
+                        try
+                        {
+                            map.spriteSheet = this.Content.Load<Texture2D>("tiles/tileset" + (highlightIndex + 1));
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                            Console.WriteLine("Error Loading Tiles: Specified Tile sheet for map " + (highlightIndex + 1) + " not found.");
+                            map.spriteSheet = this.Content.Load<Texture2D>("tiles/tileset1");
+                        }
+
+
+                        gameState = GameState.Play;
                         highlightIndex = 0;
                         if (musicEnabled)
                         {
