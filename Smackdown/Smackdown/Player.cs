@@ -13,7 +13,7 @@ namespace Smackdown
 {
     class Player: Sprite
     {
-        private string currentAnim = "Idle";
+        private string currentAnim;
         private SpriteEffects flip;
         private Texture2D ballTex;
         public bool DeadAnimationEnded;
@@ -38,7 +38,7 @@ namespace Smackdown
         private readonly float MaxJumpTime = 0.35f;
         private readonly float JumpLauchVelocity = -5000.0f;
         private readonly float GravityAcceleration = 21000f;
-        private readonly float MaxFallSpeed = 30000f;
+        private readonly float MaxFallSpeed = 40000f;
         private readonly float JumpControlPower = 0.14f;
         private readonly float MoveStickScale = 1.0f;
 
@@ -77,6 +77,8 @@ namespace Smackdown
             map = m;
             ballTex = ballT;
             gps = GamePad.GetState(playerIndex);
+
+            currentAnim = "Idle";
 
             LoadAnimations();
         }
