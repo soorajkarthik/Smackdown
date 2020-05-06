@@ -74,32 +74,38 @@ namespace Smackdown
             switch (tileType)
             {
                 //"nothing"
-                case "0":
+                case ".":
                 default:
                     return new Rectangle();
                 //ordinary
                 case "1":
                     return new Rectangle(0, 80, 16, 15);
-                //platform
+                //empty box
                 case "2":
+                    return new Rectangle(48, 96, 16, 16);
+                //full box
+                case "3":
+                    return new Rectangle(80, 96, 16, 16);
+                //platform
+                case "4":
                     return new Rectangle(64, 80, 16, 15);
                 //platform left end
-                case "3":
+                case "5":
                     return new Rectangle(48, 80, 16, 15);
                 //platform right end
-                case "4":
+                case "6":
                     return new Rectangle(80, 80, 16, 15);
                 //spike facing up
-                case "5":
-                    return new Rectangle(32, 96, 16, 16);
-                //spike facing down
-                case "6":
-                    return new Rectangle(48, 128, 16, 16);
-                //spike facing left
                 case "7":
-                    return new Rectangle(32, 128, 16, 16);
-                //spike facing right
+                    return new Rectangle(32, 97, 15, 15);
+                //spike facing down
                 case "8":
+                    return new Rectangle(49, 128, 15, 15);
+                //spike facing left
+                case "9":
+                    return new Rectangle(32, 128, 16, 15);
+                //spike facing right
+                case "10":
                     return new Rectangle(16, 128, 16, 16);
             }
         }
@@ -109,22 +115,25 @@ namespace Smackdown
             switch (tileType)
             {
                 //"nothing"
-                case "0":
+                case ".":
                 default:
                     return Tile.CollisionType.Passable;
                 //ordinary
                 case "1":
-                    return Tile.CollisionType.Impassable;
-                //platform
+                //boxes
                 case "2":
                 case "3":
+                    return Tile.CollisionType.Impassable;
+                //platform
                 case "4":
+                case "5":
+                case "6":
                     return Tile.CollisionType.Platform;
                 //spikes
-                case "5": //up
-                case "6": //down
-                case "7": //left
-                case "8": //right
+                case "7": //up
+                case "8": //down
+                case "9": //left
+                case "10": //right
                     return Tile.CollisionType.Spikes;
             }
         }
