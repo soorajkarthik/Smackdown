@@ -18,7 +18,7 @@ namespace Smackdown
         public Map map;
         private bool isOnGround;
         private float previousBottom;
-        public bool pickupAble;
+        //public bool pickupAble;
         private readonly float xMultiplier = 30f;
         private readonly float yMultiplier = 4000f;
         private readonly float gravityAcceleration = 50f;

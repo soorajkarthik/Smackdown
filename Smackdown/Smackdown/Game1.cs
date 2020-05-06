@@ -35,6 +35,10 @@ namespace Smackdown
         private int highlightIndex;
         private Map map;
 
+
+        private Texture2D tileset1;
+        private Texture2D tileset2;
+        private Texture2D tileset3;
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
 
@@ -111,7 +115,9 @@ namespace Smackdown
             smallFont = Content.Load<SpriteFont>("fonts/SpriteFont4");
 
             backgroundTex = Content.Load<Texture2D>("tiles/background1");
-            map.spriteSheet = Content.Load<Texture2D>("tiles/tileset");
+            tileset1 = Content.Load<Texture2D>("tiles/tileset1");
+            tileset2 = Content.Load<Texture2D>("tiles/tileset2");
+            tileset3 = Content.Load<Texture2D>("tiles/tileset3");
             emptyTex = Content.Load<Texture2D>("menus/empty");
             mainMenuTex = Content.Load<Texture2D>("menus/mainMenu");
             controlScreenTex = Content.Load<Texture2D>("menus/controls");
@@ -209,10 +215,27 @@ namespace Smackdown
                 case GameState.MapSelection:
                     if (p1gps.IsButtonDown(Buttons.A) && !oldp1gps.IsButtonDown(Buttons.A))
                     {
-                        map.loadMap(@"Content/maps/map" + (highlightIndex + 1) + ".txt");      
-                        highlightIndex = 0;
-                        gameState = GameState.Play;
+                        map.loadMap(@"Content/maps/map" + (highlightIndex + 1) + ".txt");
 
+                        
+                        gameState = GameState.Play;
+                        switch (highlightIndex + 1)
+                        {
+                            case 1:
+                                map.spriteSheet = tileset1;
+                                break;
+                            case 2:
+                                map.spriteSheet = tileset2;
+                                break;
+                            case 3:
+                                map.spriteSheet = tileset3;
+                                break;
+                            default:
+                                Console.WriteLine("Error Loading Tiles: Specified Tile sheet for map " + (highlightIndex + 1) + " not found.");
+                                map.spriteSheet = tileset1;
+                                break;
+                        }
+                        highlightIndex = 0;
                         if (musicEnabled)
                         {
                             songTimeLeft = battleThemes[currentSong].Duration.Ticks;

@@ -37,10 +37,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="tiles\tileset.png">
-      <Name>tileset</Name>
+    <Compile Include="..\..\..\..\..\..\Desktop\tileset1.png">
+      <Name>tileset1</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
+      <Link>tiles\tileset1.png</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -204,6 +205,20 @@
   <ItemGroup>
     <Compile Include="menus\mapSelection.png">
       <Name>mapSelection</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="tiles\tileset2.png">
+      <Name>tileset2</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="tiles\tileset3.png">
+      <Name>tileset3</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
