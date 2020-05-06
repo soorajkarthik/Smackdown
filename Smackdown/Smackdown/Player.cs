@@ -256,14 +256,15 @@ namespace Smackdown
                 position.Y = 0 - localBounds.Height + 60;
             }
 
-            //if (position.X > map.rows * Tile.TILE_SIZE)
-            //{
-            //    position.X = 0 - localBounds.Width + 60;
-            //}
-            //if (position.X + localBounds.Width < 0)
-            //{
-            //    position.X = map.rows * Tile.TILE_SIZE - 40;
-            //}
+            if (position.X > map.rows * Tile.TILE_SIZE)
+            {
+                position.X = 10;
+            }
+            if (position.X + localBounds.Width - 10 < 0)
+            {
+                position.X = map.rows * Tile.TILE_SIZE - localBounds.Width - 10;
+                
+            }
         }
 
         private float DoJump(float yVel, GameTime gameTime)

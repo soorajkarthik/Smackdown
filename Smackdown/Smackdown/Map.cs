@@ -47,7 +47,7 @@ namespace Smackdown
                         string[] line = reader.ReadLine().Split(' ');
                         if (line.Length != tileArray.GetLength(0))
                         {
-                            throw new Exception("file x dimensions are not correct");
+                            throw new Exception("file x dimensions are not correct " + line.Length + " vs." + tileArray.GetLength(0) + "on line " + y);
                         }
                         for (int x = 0; x < line.Length; x++)
                         {

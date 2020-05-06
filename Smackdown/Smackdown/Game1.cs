@@ -199,7 +199,7 @@ namespace Smackdown
                         highlightIndex = 0;
                         gameState = GameState.MapSelection;
                     }
-                    else if (p1gps.IsButtonDown(Buttons.B))
+                    else if (p1gps.IsButtonDown(Buttons.B) && !oldp1gps.IsButtonDown(Buttons.B))
                     {
                         highlightIndex = 0;
                         gameState = GameState.MainMenu;
@@ -242,7 +242,7 @@ namespace Smackdown
                             MediaPlayer.Play(battleThemes[currentSong]);
                         }
                     }
-                    else if (p1gps.IsButtonDown(Buttons.B))
+                    else if (p1gps.IsButtonDown(Buttons.B) && !oldp1gps.IsButtonDown(Buttons.B))
                     {
                         highlightIndex = 0;
                         gameState = GameState.PlayerSelection;
@@ -407,7 +407,7 @@ namespace Smackdown
                     spriteBatch.Draw(mapSelectionTex, GraphicsDevice.Viewport.Bounds, Color.White);
                     spriteBatch.Draw(emptyTex, new Rectangle(highlightIndex * 480, 300, 480, 360), Color.DarkBlue * .35f);
                     spriteBatch.DrawString(medFont, "What Map Would You Like to Play?", new Vector2(300, 100), Color.SlateGray);
-                    spriteBatch.DrawString(medFont, "A to confirm, B to return to Player Selection", new Vector2(150, 800), Color.SlateGray);
+                    spriteBatch.DrawString(medFont, "A to confirm, B to return to Player Selection", new Vector2(130, 800), Color.SlateGray);
                     break;
                 case GameState.Play:
                     spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
