@@ -21,6 +21,7 @@ namespace Smackdown
         {
             MainMenu,
             PlayerSelection,
+            MapSelection,
             Play,
             PauseMenu,
             GameOver,
@@ -45,6 +46,7 @@ namespace Smackdown
         private Texture2D emptyTex;
         private Texture2D mainMenuTex;
         private Texture2D playerSelectionTex;
+        private Texture2D mapSelectionTex;
         private Texture2D controlScreenTex;
         private Texture2D backgroundTex;
 
@@ -82,7 +84,6 @@ namespace Smackdown
             highlightIndex = 0;
 
             map = new Map(30, 20);
-            map.loadMap(@"Content/maps/testmap2.txt");
 
             MediaPlayer.IsRepeating = true;
             songTimeLeft = unpauseTimeLeft = currentSong = 0;
@@ -115,6 +116,7 @@ namespace Smackdown
             mainMenuTex = Content.Load<Texture2D>("menus/mainMenu");
             controlScreenTex = Content.Load<Texture2D>("menus/controls");
             playerSelectionTex = Content.Load<Texture2D>("menus/playerSelection");
+            mapSelectionTex = Content.Load<Texture2D>("menus/mapSelection");
 
             //music and sound effects
             mainTheme = Content.Load<Song>("music/Smackdown Main Theme");
@@ -186,7 +188,27 @@ namespace Smackdown
 
                     if (p1gps.IsButtonDown(Buttons.A) && !oldp1gps.IsButtonDown(Buttons.A))
                     {
-                        spawnPlayers(highlightIndex + 2); //accounting for the fact that we're using index for highlighting box         
+                        spawnPlayers(highlightIndex + 2); //accounting for the fact that we're using index for highlighting box   
+                        highlightIndex = 0;
+                        gameState = GameState.MapSelection;
+                    }
+                    else if (p1gps.IsButtonDown(Buttons.B))
+                    {
+                        highlightIndex = 0;
+                        gameState = GameState.MainMenu;
+                    }
+                    else if (p1gps.IsButtonDown(Buttons.LeftThumbstickRight) && !oldp1gps.IsButtonDown(Buttons.LeftThumbstickRight))
+                        highlightIndex++;
+                    else if (p1gps.IsButtonDown(Buttons.LeftThumbstickLeft) && !oldp1gps.IsButtonDown(Buttons.LeftThumbstickLeft))
+                        highlightIndex += 2;
+
+                    highlightIndex %= 3;
+                    break;
+
+                case GameState.MapSelection:
+                    if (p1gps.IsButtonDown(Buttons.A) && !oldp1gps.IsButtonDown(Buttons.A))
+                    {
+                        map.loadMap(@"Content/maps/map" + (highlightIndex + 1) + ".txt");      
                         highlightIndex = 0;
                         gameState = GameState.Play;
 
@@ -199,7 +221,7 @@ namespace Smackdown
                     else if (p1gps.IsButtonDown(Buttons.B))
                     {
                         highlightIndex = 0;
-                        gameState = GameState.MainMenu;
+                        gameState = GameState.PlayerSelection;
                     }
                     else if (p1gps.IsButtonDown(Buttons.LeftThumbstickRight) && !oldp1gps.IsButtonDown(Buttons.LeftThumbstickRight))
                         highlightIndex++;
@@ -335,7 +357,13 @@ namespace Smackdown
                     spriteBatch.DrawString(medFont, "How Many Fighters?", new Vector2(465, 100), Color.SlateGray);
                     spriteBatch.DrawString(medFont, "A to confirm, B to return to Main Menu", new Vector2(210, 800), Color.SlateGray);
                     break;
-
+                case GameState.MapSelection:
+                    spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
+                    spriteBatch.Draw(mapSelectionTex, GraphicsDevice.Viewport.Bounds, Color.White);
+                    spriteBatch.Draw(emptyTex, new Rectangle(highlightIndex * 480, 300, 480, 360), Color.DarkBlue * .35f);
+                    spriteBatch.DrawString(medFont, "What Map Would You Like to Play?", new Vector2(300, 100), Color.SlateGray);
+                    spriteBatch.DrawString(medFont, "A to confirm, B to return to Player Selection", new Vector2(150, 800), Color.SlateGray);
+                    break;
                 case GameState.Play:
                     spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
                     map.Draw(spriteBatch);
