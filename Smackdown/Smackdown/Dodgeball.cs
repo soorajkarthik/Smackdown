@@ -18,18 +18,18 @@ namespace Smackdown
         public Map map;
         private bool isOnGround;
         private float previousBottom;
-        int lifeCounter;
+        public bool pickupAble;
         private readonly float xMultiplier = 30f;
         private readonly float yMultiplier = 4000f;
         private readonly float gravityAcceleration = 50f;
         private readonly float MaxFallSpeed = 300f;
-        
+        public int lifeCount;
         private static Texture2D texture;
 
         private Rectangle rect;
         private Rectangle localBounds;
         private Vector2 velocity;
-        private Vector2 position;
+        public Vector2 position;
 
         private Rectangle bounds
         {
@@ -57,7 +57,8 @@ namespace Smackdown
 
         public Dodgeball(Rectangle r, Vector2 vel, Map m, Texture2D img)
         {
-            lifeCounter = 0;
+
+            lifeCount = 20;
             rect = new Rectangle(r.X, r.Y, 40, 40);
             velocity = vel;
             position = new Vector2((float)rect.X, (float)rect.Y);
@@ -88,7 +89,7 @@ namespace Smackdown
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
             Vector2 previousPosition = position;
 
-            velocity.Y = MathHelper.Clamp(velocity.Y + gravityAcceleration, -MaxFallSpeed * 4f, MaxFallSpeed * 2f) ;
+            velocity.Y = MathHelper.Clamp(velocity.Y + gravityAcceleration, -MaxFallSpeed * 4f, MaxFallSpeed * 2f);
             velocity.X = MathHelper.Clamp(velocity.X, -20, 20);
             if (!isOnGround)
             {
@@ -111,9 +112,14 @@ namespace Smackdown
                 position.Y = 0 - localBounds.Height + 40;
             }
 
+
+
             rect.X = (int)position.X;
             rect.Y = (int)position.Y;
-            
+            if (lifeCount > 0)
+            {
+                lifeCount--;
+            }
         }
 
         private void HandleCollisions()
@@ -198,6 +204,7 @@ namespace Smackdown
             //check wall collisions with level here
             //map.checkCollisons(rect);
             HandlePhysics(gameTime);
+            
         }
 
         public void Draw(SpriteBatch spriteBatch)

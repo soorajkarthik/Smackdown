@@ -148,6 +148,7 @@ namespace Smackdown
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            
             //Allows the game to exit
             GamePadState p1gps = GamePad.GetState(PlayerIndex.One);
             
@@ -255,7 +256,10 @@ namespace Smackdown
                         }
                     }
 
+
+
                     players.ForEach(player => player.Update(gameTime));
+                    
                     for (int i = 0; i < players.Count; i++)
                     {
                         if (GamePad.GetState((PlayerIndex)i).IsButtonDown(Buttons.Start))
@@ -267,8 +271,23 @@ namespace Smackdown
                                 pause.Play();
                             }
                         }
+
+
+                        for (int k = 0; k < players.Count; k++)
+                        {
+                            for(int j = 0; j < players[k].activeBalls.Count; j++)
+                            {
+                                if (players[i].gps.IsButtonDown(Buttons.B) && players[i].oldgps.IsButtonDown(Buttons.B) && getDistance(players[k].activeBalls[j].position, players[i].position) < 40)
+                                {
+                                    players[i].balls++;
+                                    players[k].activeBalls.RemoveAt(j);
+                                }
+                            }
+                            
+                        }
                     }
 
+                    
                     break;
 
                 case GameState.PauseMenu:
@@ -321,7 +340,10 @@ namespace Smackdown
             }
         }
 
-
+        private int getDistance(Vector2 one, Vector2 two)
+        {
+            return Math.Abs((int) Math.Sqrt(Math.Pow(two.X - one.X, 2) + Math.Pow(two.Y - one.Y, 2)));
+        }
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -367,13 +389,27 @@ namespace Smackdown
                 case GameState.Play:
                     spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
                     map.Draw(spriteBatch);
+                    for (int i = 0; i < players.Count; i++)
+                    {
+                        if (players[i].isAlive)
+                        {
+                            String ballStr = "";
+                            for(int j = 0; j < players[i].balls; j++)
+                            {
+                                ballStr += "1 ";
+                            }
+                            spriteBatch.DrawString(smallFont, "" + ballStr + "", new Vector2(players[i].position.X - 10, players[i].position.Y - 50), Color.Yellow);
+                        }
+                    }
                     players.ForEach(player => player.Draw(spriteBatch));
+                    
                     break;
 
                 case GameState.PauseMenu:
                     spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
                     map.Draw(spriteBatch);
                     players.ForEach(player => player.Draw(spriteBatch));
+                    
                     spriteBatch.Draw(emptyTex, GraphicsDevice.Viewport.Bounds, Color.Black * 0.65f);
                     spriteBatch.DrawString(largeFont, "Paused", new Vector2(535, 300), Color.SlateGray);
                     spriteBatch.DrawString(medFont, "Press back to resume", new Vector2(435, 440), Color.SlateGray);
