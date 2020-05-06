@@ -87,7 +87,7 @@ namespace Smackdown
             MediaPlayer.IsRepeating = true;
             songTimeLeft = unpauseTimeLeft = currentSong = 0;
 
-            musicEnabled = false; //control if music is turned on
+            musicEnabled = true; //control if music is turned on
 
             base.Initialize();
             
@@ -214,10 +214,8 @@ namespace Smackdown
                     {
                         if (unpauseTimeLeft > 0)
                         {
-                            unpauseTimeLeft -= 60;
-                            Console.WriteLine(unpauseTimeLeft);
-                            Console.WriteLine(TimeSpan.FromTicks(unpauseTimeLeft).TotalSeconds);
-                            if (unpauseTimeLeft <= 0)
+                            unpauseTimeLeft --;
+                            if (unpauseTimeLeft == 90)
                             {
                                 MediaPlayer.Resume();
                             }
@@ -262,7 +260,7 @@ namespace Smackdown
                             if (musicEnabled)
                             {
                                 unpause.Play();
-                                unpauseTimeLeft = unpause.Duration.Ticks;
+                                unpauseTimeLeft = unpause.Duration.Seconds * 60;
                             }
                         }
                         else if (gps.IsButtonDown(Buttons.LeftShoulder) && gps.IsButtonDown(Buttons.RightShoulder))
