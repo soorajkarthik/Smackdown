@@ -111,7 +111,6 @@ namespace Smackdown
             smallFont = Content.Load<SpriteFont>("fonts/SpriteFont4");
 
             backgroundTex = Content.Load<Texture2D>("tiles/background1");
-            map.spriteSheet = Content.Load<Texture2D>("tiles/tileset");
             emptyTex = Content.Load<Texture2D>("menus/empty");
             mainMenuTex = Content.Load<Texture2D>("menus/mainMenu");
             controlScreenTex = Content.Load<Texture2D>("menus/controls");
@@ -208,6 +207,7 @@ namespace Smackdown
                 case GameState.MapSelection:
                     if (p1gps.IsButtonDown(Buttons.A) && !oldp1gps.IsButtonDown(Buttons.A))
                     {
+                        map.spriteSheet = Content.Load<Texture2D>("tiles/tileset" + (highlightIndex + 1));
                         map.loadMap(@"Content/maps/map" + (highlightIndex + 1) + ".txt");      
                         highlightIndex = 0;
                         gameState = GameState.Play;

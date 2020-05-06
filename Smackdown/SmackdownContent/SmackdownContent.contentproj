@@ -37,8 +37,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="tiles\tileset.png">
-      <Name>tileset</Name>
+    <Compile Include="tiles\tileset1.png">
+      <Name>tileset1</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
