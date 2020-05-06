@@ -47,7 +47,9 @@ namespace Smackdown
         private Texture2D playerSelectionTex;
         private Texture2D controlScreenTex;
         private Texture2D backgroundTex;
-        
+
+        private bool musicEnabled;
+
         private Song mainTheme;
         private Song[] battleThemes;
         private SoundEffect pause, unpause;
@@ -84,6 +86,8 @@ namespace Smackdown
 
             MediaPlayer.IsRepeating = true;
             songTimeLeft = unpauseTimeLeft = currentSong = 0;
+
+            musicEnabled = false; //control if music is turned on
 
             base.Initialize();
             
@@ -123,7 +127,8 @@ namespace Smackdown
             pause = Content.Load<SoundEffect>("music/PauseButton");
             unpause = Content.Load<SoundEffect>("music/UnpauseButton");
 
-            MediaPlayer.Play(mainTheme);
+            if (musicEnabled)
+                MediaPlayer.Play(mainTheme);
         }
 
         /// <summary>
@@ -184,9 +189,12 @@ namespace Smackdown
                         spawnPlayers(highlightIndex + 2); //accounting for the fact that we're using index for highlighting box         
                         highlightIndex = 0;
                         gameState = GameState.Play;
-                        
-                        songTimeLeft = battleThemes[currentSong].Duration.Ticks;
-                        MediaPlayer.Play(battleThemes[currentSong]);
+
+                        if (musicEnabled)
+                        {
+                            songTimeLeft = battleThemes[currentSong].Duration.Ticks;
+                            MediaPlayer.Play(battleThemes[currentSong]);
+                        }
                     }
                     else if (p1gps.IsButtonDown(Buttons.Back) || p1gps.IsButtonDown(Buttons.B))
                     {
@@ -202,25 +210,28 @@ namespace Smackdown
                     break;
 
                 case GameState.Play:
-                    if (unpauseTimeLeft > 0)
+                    if (musicEnabled)
                     {
-                        unpauseTimeLeft -= 60;
-                        Console.WriteLine(unpauseTimeLeft);
-                        Console.WriteLine(TimeSpan.FromTicks(unpauseTimeLeft).TotalSeconds);
-                        if (unpauseTimeLeft <= 0)
+                        if (unpauseTimeLeft > 0)
                         {
-                            MediaPlayer.Resume();
+                            unpauseTimeLeft -= 60;
+                            Console.WriteLine(unpauseTimeLeft);
+                            Console.WriteLine(TimeSpan.FromTicks(unpauseTimeLeft).TotalSeconds);
+                            if (unpauseTimeLeft <= 0)
+                            {
+                                MediaPlayer.Resume();
+                            }
                         }
-                    }
-                    else
-                    {
-                        songTimeLeft--;
-                        if (songTimeLeft == 0)
+                        else
                         {
-                            currentSong++;
-                            currentSong %= 2;
-                            songTimeLeft = battleThemes[currentSong].Duration.Ticks;
-                            MediaPlayer.Play(battleThemes[currentSong]);
+                            songTimeLeft--;
+                            if (songTimeLeft == 0)
+                            {
+                                currentSong++;
+                                currentSong %= 2;
+                                songTimeLeft = battleThemes[currentSong].Duration.Ticks;
+                                MediaPlayer.Play(battleThemes[currentSong]);
+                            }
                         }
                     }
 
@@ -230,8 +241,11 @@ namespace Smackdown
                         if (GamePad.GetState((PlayerIndex)i).IsButtonDown(Buttons.Start))
                         {
                             gameState = GameState.PauseMenu;
-                            MediaPlayer.Pause();
-                            pause.Play();
+                            if (musicEnabled)
+                            {
+                                MediaPlayer.Pause();
+                                pause.Play();
+                            }
                         }
                     }
 
@@ -245,13 +259,19 @@ namespace Smackdown
                         if (gps.IsButtonDown(Buttons.Back))
                         {
                             gameState = GameState.Play;
-                            unpause.Play();
-                            unpauseTimeLeft = unpause.Duration.Ticks;
+                            if (musicEnabled)
+                            {
+                                unpause.Play();
+                                unpauseTimeLeft = unpause.Duration.Ticks;
+                            }
                         }
                         else if (gps.IsButtonDown(Buttons.LeftShoulder) && gps.IsButtonDown(Buttons.RightShoulder))
                         {
                             gameState = GameState.MainMenu;
-                            MediaPlayer.Play(mainTheme);
+                            if (musicEnabled)
+                            {
+                                MediaPlayer.Play(mainTheme);
+                            }
                         }
                     }
                         
