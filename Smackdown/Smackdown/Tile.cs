@@ -17,7 +17,8 @@ namespace Smackdown
         {
             Passable = 0,
             Platform = 1,
-            Impassable = 2
+            Impassable = 2,
+            Spikes = 3
         }
 
         public static readonly int TILE_SIZE = 48;

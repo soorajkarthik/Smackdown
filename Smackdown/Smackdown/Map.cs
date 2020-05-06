@@ -89,7 +89,18 @@ namespace Smackdown
                 //platform right end
                 case "4":
                     return new Rectangle(80, 80, 16, 15);
-
+                //spike facing up
+                case "5":
+                    return new Rectangle(32, 96, 16, 16);
+                //spike facing down
+                case "6":
+                    return new Rectangle(48, 128, 16, 16);
+                //spike facing left
+                case "7":
+                    return new Rectangle(32, 128, 16, 16);
+                //spike facing right
+                case "8":
+                    return new Rectangle(16, 128, 16, 16);
             }
         }
 
@@ -109,6 +120,12 @@ namespace Smackdown
                 case "3":
                 case "4":
                     return Tile.CollisionType.Platform;
+                //spikes
+                case "5": //up
+                case "6": //down
+                case "7": //left
+                case "8": //right
+                    return Tile.CollisionType.Spikes;
             }
         }
 
