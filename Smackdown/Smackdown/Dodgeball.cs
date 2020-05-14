@@ -27,7 +27,7 @@ namespace Smackdown
 
         private Rectangle rect;
         private Rectangle localBounds;
-        private Vector2 velocity;
+        public Vector2 velocity;
         public Vector2 position;
         public PlayerIndex owner;
 

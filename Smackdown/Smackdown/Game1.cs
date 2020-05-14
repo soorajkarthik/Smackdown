@@ -333,6 +333,7 @@ namespace Smackdown
                             if (ball.owner != player.playerIndex && ball.bounds.Intersects(player.bounds) && ball.bounds.GetIntersectionDepth(player.bounds).Length() >= 5f)
                             {
                                 player.isAlive = false;
+                                ball.velocity.X /= 50;
                                 break;
                             }
                         }
