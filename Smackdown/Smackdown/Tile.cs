@@ -28,12 +28,11 @@ namespace Smackdown
 
         public CollisionType collisionType;
 
-        //a bunch of constructors bc idk y
         public Tile() : this(0, 0, new Rectangle())
         {
         }
 
-        public Tile(Rectangle loc, Rectangle imgSource): this(loc.X, loc.Y, imgSource, CollisionType.Passable)
+        public Tile(Rectangle loc, Rectangle imgSource) : this(loc.X, loc.Y, imgSource, CollisionType.Passable)
         {
         }
 
@@ -44,9 +43,8 @@ namespace Smackdown
         public Tile(Rectangle loc, Rectangle imgSource, CollisionType collisionType) : this(loc.X, loc.Y, imgSource, collisionType)
         {
         }
-        
-        //actual constructor
-        public Tile (int x_coord, int y_coord, Rectangle imgSource, CollisionType collisionType)
+
+        public Tile(int x_coord, int y_coord, Rectangle imgSource, CollisionType collisionType)
         {
             loc = new Rectangle(x_coord * TILE_SIZE, y_coord * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             this.imgSource = imgSource;

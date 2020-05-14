@@ -18,7 +18,6 @@ namespace Smackdown
         public Map map;
         private bool isOnGround;
         private float previousBottom;
-        //public bool pickupAble;
         private readonly float xMultiplier = 30f;
         private readonly float yMultiplier = 4000f;
         private readonly float gravityAcceleration = 50f;
@@ -51,7 +50,7 @@ namespace Smackdown
             }
         }
 
-        public Dodgeball(): this(new Rectangle(), new Vector2(), new Map(), null, PlayerIndex.One)
+        public Dodgeball() : this(new Rectangle(), new Vector2(), new Map(), null, PlayerIndex.One)
         {
 
         }
@@ -73,8 +72,8 @@ namespace Smackdown
             int top = img.Height - height;
 
             localBounds = new Rectangle(left, top, width, height);
-            
-    }
+
+        }
 
         public void throwBall(Vector2 throwVector)
         {
@@ -137,15 +136,15 @@ namespace Smackdown
             {
                 for (int x = leftTile; x <= rightTile; ++x)
                 {
-                    
+
                     Tile.CollisionType collision = map.getCollisionAtCoordinates(x, y);
-                    
+
                     if (y == topTile + 1 && x == leftTile + 1)
                     {
                         //Console.WriteLine("bounce");
                         if (collision == Tile.CollisionType.Impassable)
                         {
-                            
+
                             velocity.Y = -Math.Abs(velocity.Y) * 1f;
                         }
                     }
@@ -184,7 +183,8 @@ namespace Smackdown
                                 if (velocity.X > 0)
                                 {
                                     velocity.X = -Math.Abs(velocity.X) * 0.5f;
-                                } else if (velocity.X < 0)
+                                }
+                                else if (velocity.X < 0)
                                 {
                                     velocity.X = Math.Abs(velocity.X) * 0.5f;
                                 }
@@ -199,19 +199,19 @@ namespace Smackdown
         public void Update(GameTime gameTime)
         {
             //Once level class is finished, do level.getGravity
-            
+
 
             //rect.X = (int)x;
             //rect.Y = (int)y;
             //check wall collisions with level here
             //map.checkCollisons(rect);
             HandlePhysics(gameTime);
-            
+
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture, bounds, Color.White);
-        }    
+        }
     }
 }

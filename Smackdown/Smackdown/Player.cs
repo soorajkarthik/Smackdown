@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Media;
 
 namespace Smackdown
 {
-    class Player: Sprite
+    class Player : Sprite
     {
         private string currentAnim;
         private SpriteEffects flip;
@@ -19,7 +19,7 @@ namespace Smackdown
         public bool DeadAnimationEnded;
         public int balls;
 
-        public bool isAlive;       
+        public bool isAlive;
         public bool isOnGround;
         private bool isJumping;
         private bool isGameOver;
@@ -63,12 +63,12 @@ namespace Smackdown
         }
 
 
-        public Player(): this(new Vector2(), null, PlayerIndex.One, null, null)
+        public Player() : this(new Vector2(), null, PlayerIndex.One, null, null)
         {
 
         }
 
-        public Player(Vector2 pos, Texture2D img, PlayerIndex playerIndex, Map m, Texture2D ballT): base(96, 96, 6)
+        public Player(Vector2 pos, Texture2D img, PlayerIndex playerIndex, Map m, Texture2D ballT) : base(96, 96, 6)
         {
             balls = 3;
             this.position = pos;
@@ -91,7 +91,7 @@ namespace Smackdown
         private void LoadAnimations()
         {
             Animation anim = new Animation();
-            anim.LoadAnimation("Idle", new List<int> { 0, 0, 6, 6, 7, 7, 7, 8, 8, 8}, 3, true);
+            anim.LoadAnimation("Idle", new List<int> { 0, 0, 6, 6, 7, 7, 7, 8, 8, 8 }, 3, true);
             SpriteAnimations.Add("Idle", anim);
 
             anim = new Animation();
@@ -99,11 +99,11 @@ namespace Smackdown
             SpriteAnimations.Add("Walking", anim);
 
             anim = new Animation();
-            anim.LoadAnimation("Jump", new List<int> { 2}, 1, true);
+            anim.LoadAnimation("Jump", new List<int> { 2 }, 1, true);
             SpriteAnimations.Add("Jump", anim);
 
             anim = new Animation();
-            anim.LoadAnimation("Land", new List<int> { 2, 3 , 3, 3, 3}, 10, false);
+            anim.LoadAnimation("Land", new List<int> { 2, 3, 3, 3, 3 }, 10, false);
             anim.AnimationCallBack(() =>
             {
                 currentAnim = "Idle";
@@ -112,7 +112,7 @@ namespace Smackdown
             SpriteAnimations.Add("Land", anim);
 
             anim = new Animation();
-            anim.LoadAnimation("Dead", new List<int> { 0, 4, 4, 5, 5, 5, 5, 5, 16, 16, 16}, 3, false);
+            anim.LoadAnimation("Dead", new List<int> { 0, 4, 4, 5, 5, 5, 5, 5, 16, 16, 16 }, 3, false);
             anim.AnimationCallBack(() => DeadAnimationEnded = true);
             SpriteAnimations.Add("Dead", anim);
 
@@ -177,20 +177,20 @@ namespace Smackdown
             float horizMovement = gps.ThumbSticks.Left.X * MoveStickScale;
             isJumping =
                gps.IsButtonDown(Buttons.A) ||
-               gps.ThumbSticks.Left.Y > 0.5 || 
+               gps.ThumbSticks.Left.Y > 0.5 ||
                gps.IsButtonDown(Buttons.LeftTrigger);
 
             if (gps.IsButtonDown(Buttons.RightTrigger) && !oldgps.IsButtonDown(Buttons.RightTrigger))
             {
                 throwBall(new Vector2(gps.ThumbSticks.Right.X, gps.ThumbSticks.Right.Y));
-            } 
+            }
 
             //For falling through platform
             else if (gps.ThumbSticks.Left.Y <= -0.5)
             {
                 int xCoord = (int)Math.Floor((float)bounds.Center.X / Tile.TILE_SIZE);
                 int feetYCoord = (int)Math.Ceiling((float)bounds.Bottom / Tile.TILE_SIZE) - 1;
-                if(map.getCollisionAtCoordinates(xCoord, feetYCoord) == Tile.CollisionType.Platform)
+                if (map.getCollisionAtCoordinates(xCoord, feetYCoord) == Tile.CollisionType.Platform)
                 {
                     position.Y += 1;
                     previousBottom = int.MaxValue;
@@ -204,7 +204,7 @@ namespace Smackdown
                 SpriteAnimations[currentAnim].ResetPlay();
             }
 
-            if(isOnGround &&  currentAnim == "Jump")
+            if (isOnGround && currentAnim == "Jump")
             {
                 SpriteAnimations[currentAnim].Stop();
                 currentAnim = "Land";
@@ -224,7 +224,7 @@ namespace Smackdown
                 currentAnim = "Idle";
                 SpriteAnimations[currentAnim].ResetPlay();
             }
-            
+
             return horizMovement;
         }
 
@@ -277,7 +277,7 @@ namespace Smackdown
             if (position.X + localBounds.Width - 10 < 0)
             {
                 position.X = map.rows * Tile.TILE_SIZE - localBounds.Width - 10;
-                
+
             }
         }
 
@@ -369,14 +369,14 @@ namespace Smackdown
                             {
                                 position = new Vector2(position.X + depth.X / 2, position.Y);
                             }
-                            
+
                         }
                     }
                 }
             }
             previousBottom = bounds.Bottom;
         }
-     
+
         public void Draw(SpriteBatch spriteBatch)
         {
 

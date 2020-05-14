@@ -14,7 +14,7 @@ namespace Smackdown
             private set;
         }
 
-    
+
 
         public int FrameToDraw
         {
