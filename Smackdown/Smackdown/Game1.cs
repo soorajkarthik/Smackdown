@@ -26,12 +26,12 @@ namespace Smackdown
             PauseMenu,
             GameOver,
             Controls,
-            Settings
         }
 
         private GameState gameState;
         private GamePadState oldp1gps;
         private List<Player> players;
+        private Player winner;
         private int highlightIndex;
         private Map map;
 
@@ -162,7 +162,7 @@ namespace Smackdown
             switch (gameState)
             {
                 case GameState.MainMenu:
-                    if (p1gps.IsButtonDown(Buttons.A))
+                    if (p1gps.IsButtonDown(Buttons.A) && !oldp1gps.IsButtonDown(Buttons.A))
                     {
                         switch (highlightIndex)
                         {
@@ -284,8 +284,43 @@ namespace Smackdown
                     }
 
 
+                    List<Dodgeball> currBalls = new List<Dodgeball>();
+                    for (int i = 0; i < players.Count; i++)
+                    {
+                        Player player = players[i];
 
-                    players.ForEach(player => player.Update(gameTime));
+                        if (players.Count == 1)
+                        {
+                            gameState = GameState.GameOver;
+                            winner = player;
+                            winner.OnGameOver();
+                            break;    
+                        }
+
+                        else if(player.DeadAnimationEnded)
+                        {
+                            players.Remove(player);
+                            i--;
+                            continue;
+                        }
+
+                        player.Update(gameTime);
+                        currBalls.AddRange(player.activeBalls);
+                    }
+
+                    currBalls.ForEach(ball =>
+                    {
+                        foreach (Player player in players)
+                        {
+                            if (ball.owner != player.playerIndex && ball.bounds.Intersects(player.bounds) && ball.bounds.GetIntersectionDepth(player.bounds).Length() >= 5f)
+                            {
+                                player.isAlive = false;
+                                break;
+                            }
+                        }
+                    }); 
+                    
+                           
                     
                     for (int i = 0; i < players.Count; i++)
                     {
@@ -341,6 +376,18 @@ namespace Smackdown
                         }
                     }
                         
+                    break;
+
+                case GameState.GameOver:
+                    winner.Update(gameTime);
+
+                    for(int i = 0; i < 4; i++)
+                    {
+                        GamePadState temp = GamePad.GetState((PlayerIndex)i);
+                        if (temp.IsButtonDown(Buttons.LeftShoulder) && temp.IsButtonDown(Buttons.RightShoulder))
+                            gameState = GameState.MainMenu; 
+                    }
+
                     break;
 
                 default:
@@ -441,6 +488,14 @@ namespace Smackdown
                     spriteBatch.DrawString(largeFont, "Paused", new Vector2(535, 300), Color.SlateGray);
                     spriteBatch.DrawString(medFont, "Press back to resume", new Vector2(435, 440), Color.SlateGray);
                     spriteBatch.DrawString(medFont, "Press LB and RB to quit", new Vector2(420, 520), Color.SlateGray);
+                    break;
+
+                case GameState.GameOver:
+                    spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
+                    winner.Draw(spriteBatch);
+                    spriteBatch.DrawString(medFont2, String.Format("Player {0} wins!", ((int)winner.playerIndex) + 1), new Vector2(445, 250), Color.SlateGray);
+                    spriteBatch.DrawString(medFont, "Press LB and RB to", new Vector2(460, 650), Color.SlateGray);
+                    spriteBatch.DrawString(medFont, "return to main menu", new Vector2(440, 715), Color.SlateGray);
                     break;
             }
 

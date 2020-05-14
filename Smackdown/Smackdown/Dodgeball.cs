@@ -30,8 +30,9 @@ namespace Smackdown
         private Rectangle localBounds;
         private Vector2 velocity;
         public Vector2 position;
+        public PlayerIndex owner;
 
-        private Rectangle bounds
+        public Rectangle bounds
         {
             get
             {
@@ -50,12 +51,12 @@ namespace Smackdown
             }
         }
 
-        public Dodgeball(): this(new Rectangle(), new Vector2(), new Map(), null)
+        public Dodgeball(): this(new Rectangle(), new Vector2(), new Map(), null, PlayerIndex.One)
         {
 
         }
 
-        public Dodgeball(Rectangle r, Vector2 vel, Map m, Texture2D img)
+        public Dodgeball(Rectangle r, Vector2 vel, Map m, Texture2D img, PlayerIndex player)
         {
 
             lifeCount = 20;
@@ -64,6 +65,7 @@ namespace Smackdown
             position = new Vector2((float)rect.X, (float)rect.Y);
             texture = img;
             map = m;
+            owner = player;
 
             int width = img.Width;
             int left = (img.Width - width) / 2;

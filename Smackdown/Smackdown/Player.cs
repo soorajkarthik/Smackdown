@@ -22,6 +22,7 @@ namespace Smackdown
         public bool isAlive;       
         public bool isOnGround;
         private bool isJumping;
+        private bool isGameOver;
 
         private bool wasJumping;
         private float jumpTime;
@@ -50,7 +51,7 @@ namespace Smackdown
         public Vector2 velocity;
 
         private Rectangle localBounds;
-        private Rectangle bounds
+        public Rectangle bounds
         {
             get
             {
@@ -75,6 +76,7 @@ namespace Smackdown
             this.velocity = new Vector2(0, 0);
             this.playerIndex = playerIndex;
             isAlive = true;
+            isGameOver = false;
             flip = SpriteEffects.None;
 
             map = m;
@@ -125,44 +127,47 @@ namespace Smackdown
 
         public void Update(GameTime gameTime)
         {
-            if (isAlive)
+            if (!isGameOver)
             {
-                float horizMovement = GetInput();
-                HandlePhysics(gameTime, horizMovement);
-
-                if (velocity.X > 0)
-                    flip = SpriteEffects.FlipHorizontally;
-                else if (velocity.X < 0)
-                    flip = SpriteEffects.None;
-
-                velocity = new Vector2(0, 0);
-                isJumping = false;
-            }
-
-            else if(!DeadAnimationEnded)
-            {
-                if(isOnGround && currentAnim != "Dead")
+                if (isAlive)
                 {
-                    SpriteAnimations[currentAnim].Stop();
-                    currentAnim = "Dead";
-                    SpriteAnimations[currentAnim].ResetPlay();
-                }
-                else
-                {
-                    HandlePhysics(gameTime, 0f);
+                    float horizMovement = GetInput();
+                    HandlePhysics(gameTime, horizMovement);
+
+                    if (velocity.X > 0)
+                        flip = SpriteEffects.FlipHorizontally;
+                    else if (velocity.X < 0)
+                        flip = SpriteEffects.None;
+
                     velocity = new Vector2(0, 0);
                     isJumping = false;
                 }
+
+                else if (!DeadAnimationEnded)
+                {
+                    if (isOnGround && currentAnim != "Dead")
+                    {
+                        SpriteAnimations[currentAnim].Stop();
+                        currentAnim = "Dead";
+                        SpriteAnimations[currentAnim].ResetPlay();
+                    }
+                    else
+                    {
+                        HandlePhysics(gameTime, 0f);
+                        velocity = new Vector2(0, 0);
+                        isJumping = false;
+                    }
+                }
+
+                //updates player's balls
+                for (int i = 0; i < activeBalls.Count; i++)
+                {
+                    activeBalls[i].Update(gameTime);
+                }
             }
-                
 
             SpriteAnimations[currentAnim].Update(gameTime);
 
-            //updates player's balls
-            for (int i = 0; i < activeBalls.Count; i++)
-            {
-                activeBalls[i].Update(gameTime);
-            }
         }
 
         private float GetInput()
@@ -221,6 +226,15 @@ namespace Smackdown
             }
             
             return horizMovement;
+        }
+
+        public void OnGameOver()
+        {
+            isGameOver = true;
+            position = new Vector2(720, 480);
+            SpriteAnimations[currentAnim].Stop();
+            currentAnim = "Idle";
+            SpriteAnimations[currentAnim].ResetPlay();
         }
 
         public void HandlePhysics(GameTime gameTime, float horizMovement)
@@ -300,7 +314,7 @@ namespace Smackdown
             if (balls > 0)
             {
                 //later switch texture by ball type
-                activeBalls.Add(new Dodgeball(new Rectangle((int)position.X, (int)position.Y - 20, 40, 40), throwVector, map, ballTex));
+                activeBalls.Add(new Dodgeball(new Rectangle((int)position.X, (int)position.Y - 20, 40, 40), throwVector, map, ballTex, playerIndex));
                 if (activeBalls.Count > 0)
                 {
                     activeBalls[activeBalls.Count - 1].throwBall(throwVector);
@@ -365,16 +379,23 @@ namespace Smackdown
      
         public void Draw(SpriteBatch spriteBatch)
         {
-            if (!DeadAnimationEnded)
+
+            if (isGameOver)
             {
                 Rectangle source = GetFrameRectangle(SpriteAnimations[currentAnim].FrameToDraw);
-                spriteBatch.Draw(SpriteSheet, position, source, Color.White, 0.0f, Origin, 1.0f, flip, 0.0f);
-
+                spriteBatch.Draw(SpriteSheet, position, source, Color.White, 0.0f, Origin, 2.0f, SpriteEffects.None, 0.0f);
             }
 
-            for(int i = 0; i < activeBalls.Count; i++)
+            else
             {
-                activeBalls[i].Draw(spriteBatch);
+                if (!DeadAnimationEnded)
+                {
+                    Rectangle source = GetFrameRectangle(SpriteAnimations[currentAnim].FrameToDraw);
+                    spriteBatch.Draw(SpriteSheet, position, source, Color.White, 0.0f, Origin, 1.0f, flip, 0.0f);
+
+                }
+
+                activeBalls.ForEach(ball => ball.Draw(spriteBatch));
             }
         }
     }
