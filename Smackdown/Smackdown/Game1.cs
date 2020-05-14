@@ -20,12 +20,13 @@ namespace Smackdown
         enum GameState
         {
             MainMenu,
+            Controls,
+            Settings,
             PlayerSelection,
             MapSelection,
             Play,
             PauseMenu,
-            GameOver,
-            Controls,
+            GameOver
         }
 
         private GameState gameState;
@@ -34,7 +35,6 @@ namespace Smackdown
         private Player winner;
         private int highlightIndex;
         private Map map;
-
 
         private Texture2D tileset1;
         private Texture2D tileset2;
@@ -52,9 +52,8 @@ namespace Smackdown
         private Texture2D playerSelectionTex;
         private Texture2D mapSelectionTex;
         private Texture2D controlScreenTex;
+        private Texture2D settingsScreenTex;
         private Texture2D backgroundTex;
-
-        private bool musicEnabled;
 
         private Song mainTheme;
         private Song[] battleThemes;
@@ -92,10 +91,7 @@ namespace Smackdown
             MediaPlayer.IsRepeating = true;
             songTimeLeft = unpauseTimeLeft = currentSong = 0;
 
-            musicEnabled = true; //control if music is turned on
-
             base.Initialize();
-            
         }
 
         /// <summary>
@@ -121,6 +117,7 @@ namespace Smackdown
             emptyTex = Content.Load<Texture2D>("menus/empty");
             mainMenuTex = Content.Load<Texture2D>("menus/mainMenu");
             controlScreenTex = Content.Load<Texture2D>("menus/controls");
+            settingsScreenTex = Content.Load<Texture2D>("menus/settings");
             playerSelectionTex = Content.Load<Texture2D>("menus/playerSelection");
             mapSelectionTex = Content.Load<Texture2D>("menus/mapSelection");
 
@@ -135,8 +132,7 @@ namespace Smackdown
             pause = Content.Load<SoundEffect>("music/PauseButton");
             unpause = Content.Load<SoundEffect>("music/UnpauseButton");
 
-            if (musicEnabled)
-                MediaPlayer.Play(mainTheme);
+            MediaPlayer.Play(mainTheme);
         }
 
         /// <summary>
@@ -155,10 +151,10 @@ namespace Smackdown
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            
+
             //Allows the game to exit
             GamePadState p1gps = GamePad.GetState(PlayerIndex.One);
-            
+
             switch (gameState)
             {
                 case GameState.MainMenu:
@@ -173,6 +169,10 @@ namespace Smackdown
                                 gameState = GameState.Controls;
                                 break;
                             case 2:
+                                highlightIndex = MediaPlayer.IsMuted ? 1 : 0;
+                                gameState = GameState.Settings;
+                                break;
+                            case 3:
                                 this.Exit();
                                 break;
                         }
@@ -181,14 +181,32 @@ namespace Smackdown
                     else if (p1gps.IsButtonDown(Buttons.LeftThumbstickDown) && !oldp1gps.IsButtonDown(Buttons.LeftThumbstickDown))
                         highlightIndex++;
                     else if (p1gps.IsButtonDown(Buttons.LeftThumbstickUp) && !oldp1gps.IsButtonDown(Buttons.LeftThumbstickUp))
-                        highlightIndex += 2;
+                        highlightIndex += 3;
 
-                    highlightIndex %= 3;
+                    highlightIndex %= 4;
                     break;
 
                 case GameState.Controls:
-                    if (p1gps.IsButtonDown(Buttons.Back) || p1gps.IsButtonDown(Buttons.B))
+                    if (p1gps.IsButtonDown(Buttons.B))
                         gameState = GameState.MainMenu;
+                    break;
+
+                case GameState.Settings:
+
+
+                    if (Math.Abs(p1gps.ThumbSticks.Left.X) >= 0.75 && Math.Abs(oldp1gps.ThumbSticks.Left.X) <= 0.65)
+                        highlightIndex++;
+                    highlightIndex %= 2;
+
+                    MediaPlayer.IsMuted = highlightIndex == 1;
+
+                    if (p1gps.IsButtonDown(Buttons.B))
+                    {
+                        highlightIndex = 2;
+                        gameState = GameState.MainMenu;
+
+                    }
+
                     break;
 
                 case GameState.PlayerSelection:
@@ -240,11 +258,10 @@ namespace Smackdown
 
                         gameState = GameState.Play;
                         highlightIndex = 0;
-                        if (musicEnabled)
-                        {
-                            songTimeLeft = battleThemes[currentSong].Duration.Ticks;
-                            MediaPlayer.Play(battleThemes[currentSong]);
-                        }
+
+                        songTimeLeft = battleThemes[currentSong].Duration.Ticks;
+                        MediaPlayer.Play(battleThemes[currentSong]);
+
                     }
                     else if (p1gps.IsButtonDown(Buttons.B) && !oldp1gps.IsButtonDown(Buttons.B))
                     {
@@ -260,28 +277,27 @@ namespace Smackdown
                     break;
 
                 case GameState.Play:
-                    if (musicEnabled)
+
+                    if (unpauseTimeLeft > 0)
                     {
-                        if (unpauseTimeLeft > 0)
+                        unpauseTimeLeft--;
+                        if (unpauseTimeLeft == 90)
                         {
-                            unpauseTimeLeft --;
-                            if (unpauseTimeLeft == 90)
-                            {
-                                MediaPlayer.Resume();
-                            }
-                        }
-                        else
-                        {
-                            songTimeLeft--;
-                            if (songTimeLeft == 0)
-                            {
-                                currentSong++;
-                                currentSong %= 2;
-                                songTimeLeft = battleThemes[currentSong].Duration.Ticks;
-                                MediaPlayer.Play(battleThemes[currentSong]);
-                            }
+                            MediaPlayer.Resume();
                         }
                     }
+                    else
+                    {
+                        songTimeLeft--;
+                        if (songTimeLeft == 0)
+                        {
+                            currentSong++;
+                            currentSong %= 2;
+                            songTimeLeft = battleThemes[currentSong].Duration.Ticks;
+                            MediaPlayer.Play(battleThemes[currentSong]);
+                        }
+                    }
+
 
 
                     List<Dodgeball> currBalls = new List<Dodgeball>();
@@ -294,10 +310,12 @@ namespace Smackdown
                             gameState = GameState.GameOver;
                             winner = player;
                             winner.OnGameOver();
-                            break;    
+                            MediaPlayer.Stop();
+                            MediaPlayer.Play(mainTheme);
+                            break;
                         }
 
-                        else if(player.DeadAnimationEnded)
+                        else if (player.DeadAnimationEnded)
                         {
                             players.Remove(player);
                             i--;
@@ -318,26 +336,25 @@ namespace Smackdown
                                 break;
                             }
                         }
-                    }); 
-                    
-                           
-                    
+                    });
+
+
+
                     for (int i = 0; i < players.Count; i++)
                     {
                         if (GamePad.GetState((PlayerIndex)i).IsButtonDown(Buttons.Start))
                         {
                             gameState = GameState.PauseMenu;
-                            if (musicEnabled)
-                            {
-                                MediaPlayer.Pause();
-                                pause.Play();
-                            }
+
+                            MediaPlayer.Pause();
+                            pause.Play();
+
                         }
 
 
                         for (int k = 0; k < players.Count; k++)
                         {
-                            for(int j = 0; j < players[k].activeBalls.Count; j++)
+                            for (int j = 0; j < players[k].activeBalls.Count; j++)
                             {
                                 if (players[i].gps.IsButtonDown(Buttons.B) && players[i].oldgps.IsButtonDown(Buttons.B) && getDistance(players[k].activeBalls[j].position, players[i].position) < 40)
                                 {
@@ -345,47 +362,45 @@ namespace Smackdown
                                     players[k].activeBalls.RemoveAt(j);
                                 }
                             }
-                            
+
                         }
                     }
 
-                    
+
                     break;
 
                 case GameState.PauseMenu:
-                    for(int i = 0; i < players.Count; i++)
+                    for (int i = 0; i < players.Count; i++)
                     {
                         GamePadState gps = GamePad.GetState((PlayerIndex)i);
 
                         if (gps.IsButtonDown(Buttons.Back))
                         {
                             gameState = GameState.Play;
-                            if (musicEnabled)
-                            {
-                                unpause.Play();
-                                unpauseTimeLeft = unpause.Duration.Seconds * 60;
-                            }
+
+                            unpause.Play();
+                            unpauseTimeLeft = unpause.Duration.Seconds * 60;
+
                         }
                         else if (gps.IsButtonDown(Buttons.LeftShoulder) && gps.IsButtonDown(Buttons.RightShoulder))
                         {
                             gameState = GameState.MainMenu;
-                            if (musicEnabled)
-                            {
-                                MediaPlayer.Play(mainTheme);
-                            }
+
+                            MediaPlayer.Play(mainTheme);
+
                         }
                     }
-                        
+
                     break;
 
                 case GameState.GameOver:
                     winner.Update(gameTime);
 
-                    for(int i = 0; i < 4; i++)
+                    for (int i = 0; i < 4; i++)
                     {
                         GamePadState temp = GamePad.GetState((PlayerIndex)i);
                         if (temp.IsButtonDown(Buttons.LeftShoulder) && temp.IsButtonDown(Buttons.RightShoulder))
-                            gameState = GameState.MainMenu; 
+                            gameState = GameState.MainMenu;
                     }
 
                     break;
@@ -405,7 +420,7 @@ namespace Smackdown
             players = new List<Player>();
             using (StreamReader reader = new StreamReader(@"Content/maps/playerSpawnInfo.txt"))
             {
-                for(int i = 0; i < numPlayers; i++)
+                for (int i = 0; i < numPlayers; i++)
                 {
                     String[] input = reader.ReadLine().Split(' ');
                     Vector2 pos = new Vector2(Convert.ToInt32(input[0]), Convert.ToInt32(input[1]));
@@ -416,7 +431,7 @@ namespace Smackdown
 
         private int getDistance(Vector2 one, Vector2 two)
         {
-            return Math.Abs((int) Math.Sqrt(Math.Pow(two.X - one.X, 2) + Math.Pow(two.Y - one.Y, 2)));
+            return Math.Abs((int)Math.Sqrt(Math.Pow(two.X - one.X, 2) + Math.Pow(two.Y - one.Y, 2)));
         }
 
         /// <summary>
@@ -428,47 +443,52 @@ namespace Smackdown
             GraphicsDevice.Clear(Color.White);
 
             spriteBatch.Begin();
+            spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
 
             switch (gameState)
             {
                 case GameState.MainMenu:
-                    spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
                     spriteBatch.Draw(mainMenuTex, GraphicsDevice.Viewport.Bounds, Color.White);
-                    spriteBatch.DrawString(medFont, "Play", new Vector2(320, 310), Color.Black);
-                    spriteBatch.DrawString(medFont, "Controls", new Vector2(253, 460), Color.Black);
-                    spriteBatch.DrawString(medFont, "Quit", new Vector2(320, 610), Color.Black);
-                    spriteBatch.Draw(emptyTex, new Rectangle(200, (150*highlightIndex) + 255, 360, 150), Color.DarkBlue * .35f);
+                    spriteBatch.DrawString(medFont, "Play", new Vector2(320, 235), Color.Black);
+                    spriteBatch.DrawString(medFont, "Controls", new Vector2(253, 385), Color.Black);
+                    spriteBatch.DrawString(medFont, "Settings", new Vector2(253, 535), Color.Black);
+                    spriteBatch.DrawString(medFont, "Quit", new Vector2(320, 685), Color.Black);
+                    spriteBatch.Draw(emptyTex, new Rectangle(200, (150 * highlightIndex) + 180, 360, 150), Color.DarkBlue * .35f);
                     break;
 
                 case GameState.Controls:
-                    spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
                     spriteBatch.Draw(controlScreenTex, GraphicsDevice.Viewport.Bounds, Color.White);
                     spriteBatch.DrawString(medFont2, "Controls", new Vector2(530, 100), Color.SlateGray);
                     break;
 
+                case GameState.Settings:
+                    spriteBatch.Draw(settingsScreenTex, GraphicsDevice.Viewport.Bounds, Color.White);
+                    spriteBatch.DrawString(medFont2, "Settings", new Vector2(530, 100), Color.SlateGray);
+                    spriteBatch.DrawString(medFont, "Music On", new Vector2(430, 345), Color.Black);
+                    spriteBatch.DrawString(medFont, "Music Off", new Vector2(770, 345), Color.Black);
+                    spriteBatch.Draw(emptyTex, new Rectangle((highlightIndex * 360) + 360, 290, 360, 150), Color.DarkBlue * .35f);
+                    break;
+
                 case GameState.PlayerSelection:
-                    spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
                     spriteBatch.Draw(playerSelectionTex, GraphicsDevice.Viewport.Bounds, Color.White);
                     spriteBatch.Draw(emptyTex, new Rectangle(highlightIndex * 480, 300, 480, 360), Color.DarkBlue * .35f);
                     spriteBatch.DrawString(medFont, "How Many Fighters?", new Vector2(465, 100), Color.SlateGray);
                     spriteBatch.DrawString(medFont, "A to confirm, B to return to Main Menu", new Vector2(210, 800), Color.SlateGray);
                     break;
                 case GameState.MapSelection:
-                    spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
                     spriteBatch.Draw(mapSelectionTex, GraphicsDevice.Viewport.Bounds, Color.White);
                     spriteBatch.Draw(emptyTex, new Rectangle(highlightIndex * 480, 300, 480, 360), Color.DarkBlue * .35f);
                     spriteBatch.DrawString(medFont, "What Map Would You Like to Play?", new Vector2(300, 100), Color.SlateGray);
                     spriteBatch.DrawString(medFont, "A to confirm, B to return to Player Selection", new Vector2(130, 800), Color.SlateGray);
                     break;
                 case GameState.Play:
-                    spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
                     map.Draw(spriteBatch);
                     for (int i = 0; i < players.Count; i++)
                     {
                         if (players[i].isAlive)
                         {
                             String ballStr = "";
-                            for(int j = 0; j < players[i].balls; j++)
+                            for (int j = 0; j < players[i].balls; j++)
                             {
                                 ballStr += "1 ";
                             }
@@ -476,14 +496,13 @@ namespace Smackdown
                         }
                     }
                     players.ForEach(player => player.Draw(spriteBatch));
-                    
+
                     break;
 
                 case GameState.PauseMenu:
-                    spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
                     map.Draw(spriteBatch);
                     players.ForEach(player => player.Draw(spriteBatch));
-                    
+
                     spriteBatch.Draw(emptyTex, GraphicsDevice.Viewport.Bounds, Color.Black * 0.65f);
                     spriteBatch.DrawString(largeFont, "Paused", new Vector2(535, 300), Color.SlateGray);
                     spriteBatch.DrawString(medFont, "Press back to resume", new Vector2(435, 440), Color.SlateGray);
@@ -491,7 +510,6 @@ namespace Smackdown
                     break;
 
                 case GameState.GameOver:
-                    spriteBatch.Draw(backgroundTex, GraphicsDevice.Viewport.Bounds, Color.DarkSlateBlue);
                     winner.Draw(spriteBatch);
                     spriteBatch.DrawString(medFont2, String.Format("Player {0} wins!", ((int)winner.playerIndex) + 1), new Vector2(445, 250), Color.SlateGray);
                     spriteBatch.DrawString(medFont, "Press LB and RB to", new Vector2(460, 650), Color.SlateGray);
